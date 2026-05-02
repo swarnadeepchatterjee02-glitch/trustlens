@@ -6,243 +6,252 @@
 <title>TrustLens — Decision Intelligence Platform</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f0f2f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0f172a}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:2px}
-input{font-family:inherit}
-button{font-family:inherit;cursor:pointer}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}70%{box-shadow:0 0 0 6px rgba(220,38,38,0)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-/* LAYOUT */
-#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-#topbar{height:56px;background:#fff;border-bottom:1px solid rgba(15,23,42,.12);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;box-shadow:0 1px 3px rgba(15,23,42,.07);overflow:hidden}
+:root{
+  --bg:#0d1117;--surf:#161b22;--card:#21262d;--card2:#2d333b;
+  --bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.15);
+  --text:#f0f6fc;--sub:#c9d1d9;--muted:#8b949e;--dim:#30363d;
+  --blue:#58a6ff;--blue2:#1f6feb;--blue3:#388bfd;
+  --green:#3fb950;--green2:#238636;
+  --red:#f85149;--red2:#da3633;
+  --amber:#d29922;
+  --purple:#bc8cff;
+  --mono:'Courier New',Courier,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+#topbar{height:52px;background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;box-shadow:0 1px 8px rgba(0,0,0,.5)}
+.logo-txt{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.12em}
+.logo-sub{font-size:11px;color:var(--muted)}
+.chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;border:1px solid var(--bdr2);background:var(--card)}
+.chip .cl{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.chip .cv{font-family:var(--mono);font-size:13px;font-weight:700}
+.eu-pill{font-family:var(--mono);font-size:9px;color:var(--blue);border:1px solid rgba(88,166,255,.3);border-radius:4px;padding:3px 9px;background:rgba(31,111,235,.15)}
 #body{display:flex;flex:1;overflow:hidden}
-#sidebar{width:252px;border-right:1px solid rgba(15,23,42,.12);display:flex;flex-direction:column;background:#fff;flex-shrink:0}
-#sidebar-list{flex:1;overflow-y:auto}
-#main{flex:1;overflow-y:auto;padding:20px 22px}
-
-/* TOPBAR */
-.tb-logo{font-family:monospace;font-size:14px;font-weight:700;letter-spacing:.1em}
-.tb-sub{font-size:11px;color:#94a3b8}
-.tb-chip{display:flex;align-items:center;gap:5px;border-radius:6px;padding:4px 10px;border:1px solid transparent;flex-shrink:0}
-.tb-chip-label{font-family:monospace;font-size:9px;color:#94a3b8}
-.tb-chip-val{font-family:monospace;font-size:13px;font-weight:700}
-.eu-badge{font-family:monospace;font-size:9px;color:#2563eb;border:1px solid rgba(37,99,235,.3);border-radius:4px;padding:3px 9px;background:#eff6ff;flex-shrink:0}
-
 /* SIDEBAR */
-.search-wrap{padding:10px 12px;border-bottom:1px solid rgba(15,23,42,.08)}
-.search-wrap input{width:100%;padding:6px 10px;border:1px solid rgba(15,23,42,.13);border-radius:6px;font-size:11.5px;color:#0f172a;background:#f8fafc;outline:none}
-.sidebar-header{padding:10px 14px 6px;font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em}
-.emp-card{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
-.emp-card:hover{background:#f8fafc}
-.emp-card.active{background:#eff6ff;border-left-color:#2563eb}
-.emp-meta{flex:1;min-width:0}
-.emp-name{font-size:12px;font-weight:500;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;justify-content:space-between;align-items:baseline}
-.emp-name.active{color:#2563eb;font-weight:600}
-.emp-role{font-size:10px;color:#94a3b8;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.emp-bar-row{display:flex;gap:5px;align-items:center}
-.emp-bar-track{flex:1;background:#e2e8f0;height:3px;border-radius:2px;overflow:hidden}
-.emp-bar-fill{height:100%}
-.emp-risk-pct{font-family:monospace;font-size:8.5px;font-weight:700;flex-shrink:0}
-.pulse-dot{width:6px;height:6px;border-radius:50%;background:#dc2626;animation:pulse 1.5s infinite;flex-shrink:0}
-
-/* DIST CHART */
-.dist-wrap{padding:12px 14px;border-top:1px solid rgba(15,23,42,.08)}
-.dist-label{font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.16em;margin-bottom:10px}
-.dist-bars{display:flex;gap:8px;align-items:flex-end;height:48px}
-.dist-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.dist-count{font-family:monospace;font-size:10px;font-weight:700}
-.dist-track{width:100%;background:#e2e8f0;border-radius:3px 3px 0 0;overflow:hidden}
-.dist-fill{opacity:.7}
-.dist-range{font-family:monospace;font-size:7.5px;color:#94a3b8}
-
-/* MAIN SECTIONS */
-.section{background:#fff;border-radius:12px;border:1px solid rgba(15,23,42,.08);padding:18px;box-shadow:0 1px 4px rgba(15,23,42,.05);margin-bottom:14px;animation:fadeIn .3s ease}
-.section-label{font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em;margin-bottom:14px}
-
-/* EMPLOYEE HEADER */
-.emp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(15,23,42,.08)}
-.emp-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:17px;font-weight:700;flex-shrink:0}
-.emp-active-label{font-family:monospace;font-size:8px;color:#2563eb;letter-spacing:.2em;margin-bottom:4px}
-.emp-full-name{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
-.emp-title{font-size:13px;color:#475569;margin-bottom:7px}
-.emp-tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-family:monospace;font-size:9.5px;color:#94a3b8}
-.dept-tag{font-family:monospace;font-size:10px;padding:2px 8px;border-radius:20px}
-.export-btn{display:flex;align-items:center;gap:7px;background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:7px;font-family:monospace;font-size:10px;letter-spacing:.06em;flex-shrink:0}
-
+#sidebar{width:232px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;background:var(--surf);flex-shrink:0}
+.ss{padding:10px 12px;border-bottom:1px solid var(--bdr)}
+.ss input{width:100%;padding:6px 10px;border:1px solid var(--bdr2);border-radius:6px;background:var(--card);color:var(--text);font-size:12px;outline:none}
+.ss input::placeholder{color:var(--muted)}
+#sl{flex:1;overflow-y:auto}
+.sh{padding:10px 14px 6px;font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.18em}
+.ei{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.ei:hover{background:var(--card)}
+.ei.active{background:rgba(31,111,235,.15);border-left-color:var(--blue)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;flex-shrink:0}
+.em{flex:1;min-width:0}
+.enr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.en{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.en.a{color:var(--blue);font-weight:600}
+.er{font-size:10px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ebr{display:flex;gap:4px;align-items:center}
+.ebt{flex:1;background:var(--dim);height:3px;border-radius:2px;overflow:hidden}
+.ebf{height:100%}
+.erp{font-family:var(--mono);font-size:8.5px;font-weight:700;flex-shrink:0}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;flex-shrink:0}
+.sdist{padding:12px 14px;border-top:1px solid var(--bdr)}
+.sdl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.16em;margin-bottom:10px}
+.sdb{display:flex;gap:8px;align-items:flex-end;height:40px}
+.sdc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.sdn{font-family:var(--mono);font-size:10px;font-weight:700}
+.sdt{width:100%;border-radius:3px 3px 0 0;overflow:hidden}
+.sdf{opacity:.8}
+.sdr{font-family:var(--mono);font-size:7.5px;color:var(--muted)}
+/* RIGHT */
+#right{display:flex;flex-direction:column;flex:1;overflow:hidden}
+#vtabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.vt{padding:11px 18px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:transparent;border-top:none;border-left:none;border-right:none}
+.vt:hover{color:var(--text)}
+.vt.active{color:var(--blue);border-bottom-color:var(--blue)}
+#main{flex:1;overflow-y:auto;padding:18px 20px}
+/* FLEET */
+.fkr{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.fk{background:var(--card);border:1px solid var(--bdr);border-top:2px solid;border-radius:8px;padding:12px;text-align:center}
+.fkl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;margin-bottom:6px}
+.fkv{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1}
+.fks{font-family:var(--mono);font-size:9px;margin-top:4px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1.3fr 1fr;gap:12px;margin-bottom:12px}
+.cc{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:16px;overflow:hidden}
+.cct{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.16em;margin-bottom:14px}
+/* DETAIL */
+.dh{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bdr)}
+.dal{font-family:var(--mono);font-size:8px;color:var(--blue);letter-spacing:.2em;margin-bottom:4px}
+.dn{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.dr{font-size:13px;color:var(--sub);margin-bottom:7px}
+.dtags{display:flex;flex-wrap:wrap;gap:6px}
+.dtag{font-family:var(--mono);font-size:9.5px;color:var(--muted)}
+.dpill{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:20px}
+.xbtn{display:flex;align-items:center;gap:7px;background:var(--blue2);border:none;color:#fff;padding:8px 16px;border-radius:7px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;cursor:pointer;flex-shrink:0}
+.xbtn:hover{background:var(--blue3)}
 /* ANOMALY */
-.anomaly-banner{padding:10px 14px;border-radius:10px;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;animation:fadeIn .3s ease;border:1px solid transparent}
-.anomaly-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.anomaly-title{font-family:monospace;font-size:11px;font-weight:700;margin-bottom:2px}
-.anomaly-detail{font-size:11px;color:#475569;line-height:1.5}
-
+.anombanner{padding:10px 14px;border-radius:10px;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;border:1px solid transparent;animation:fadeIn .3s ease}
+.adot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.at{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:2px}
+.ad{font-size:11px;color:var(--sub);line-height:1.5}
 /* PIPELINE */
-.pipeline{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:2px}
-.pipe-step{border-radius:8px;padding:8px 12px;flex-shrink:0;text-align:center;min-width:100px;border:1px solid transparent}
-.pipe-name{font-family:monospace;font-size:9px;font-weight:700;margin-bottom:2px}
-.pipe-sub{font-family:monospace;font-size:8px;color:#94a3b8}
-.pipe-arrow{font-family:monospace;font-size:14px;color:#94a3b8;flex-shrink:0;padding:0 4px}
-
-/* TABS */
-.tabs{display:flex;gap:4px;margin-bottom:14px;background:#fff;border-radius:8px;padding:4px;border:1px solid rgba(15,23,42,.08);width:fit-content}
-.tab-btn{padding:5px 16px;border-radius:5px;border:none;font-family:monospace;font-size:10px;letter-spacing:.06em;background:transparent;color:#94a3b8;transition:all .15s}
-.tab-btn.active{background:#2563eb;color:#fff}
-
-/* BENTO */
-.bento{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:10px;margin-bottom:14px}
-.bento-card{background:#fff;border-radius:12px;border:1px solid rgba(15,23,42,.08);border-top:3px solid #e2e8f0;padding:14px;box-shadow:0 1px 4px rgba(15,23,42,.04)}
-.bento-trust{grid-row:1/span 2;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px}
-.bento-label{font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em;margin-bottom:8px}
-.bento-big{font-family:monospace;font-size:28px;font-weight:700;line-height:1}
-.bento-sub{font-family:monospace;font-size:9px;margin-top:4px;margin-bottom:8px}
-.bento-bar-track{background:#e2e8f0;border-radius:3px;height:5px;overflow:hidden}
-.bento-bar-fill{height:100%;transition:width .6s ease}
-.trust-badge{font-family:monospace;font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px}
-.trust-formula{font-family:monospace;font-size:8px;color:#94a3b8}
-
-/* GAUGE SVG */
-.gauge-wrap{position:relative}
-
-/* RISK SPECTRUM */
-.risk-spectrum{position:relative;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
-.risk-dot{position:absolute;top:-1px;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .6s cubic-bezier(.34,1.56,.64,1)}
-
-/* EU CARD */
-.eu-action{font-size:10px;border-radius:5px;padding:5px 8px;line-height:1.5}
-
+.pipecard{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px;margin-bottom:14px}
+.pipel{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.16em;margin-bottom:12px}
+.piper{display:flex;align-items:center;overflow-x:auto}
+.ps{border-radius:8px;padding:7px 11px;flex-shrink:0;text-align:center;min-width:88px;border:1px solid transparent}
+.psn{font-family:var(--mono);font-size:9px;font-weight:700;margin-bottom:2px}
+.pss{font-family:var(--mono);font-size:8px;color:var(--muted)}
+.pa{color:var(--muted);padding:0 4px;flex-shrink:0;font-size:14px}
+/* DETAIL TABS */
+.dtabs{display:flex;gap:4px;margin-bottom:14px;background:var(--card);border-radius:8px;padding:4px;border:1px solid var(--bdr);width:fit-content}
+.dtb{padding:5px 14px;border-radius:5px;border:none;font-family:var(--mono);font-size:10px;letter-spacing:.06em;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.dtb.active{background:var(--blue2);color:#fff}
+/* METRICS ROW */
+.m4{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:10px;margin-bottom:14px;align-items:stretch}
+.sw{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:220px}
+.swl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.18em;margin-bottom:6px}
+.swb{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 12px;border-radius:20px;margin-top:6px}
+.swf{font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:5px}
+.mc{background:var(--card);border:1px solid var(--bdr);border-top:3px solid;border-radius:10px;padding:14px}
+.mcl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.16em;margin-bottom:8px}
+.mcv{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+.mcu{font-size:12px;color:var(--muted)}
+.mcs{font-family:var(--mono);font-size:9px;margin:4px 0 8px}
+.mbt{background:var(--dim);height:5px;border-radius:3px;overflow:hidden}
+.mbf{height:100%;transition:width .6s ease}
+.rspec{position:relative;height:8px;background:var(--dim);border-radius:4px;overflow:hidden;margin-top:6px}
+.rdot{position:absolute;top:-1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--card);transition:left .6s cubic-bezier(.34,1.56,.64,1)}
 /* SHAP */
-.shap-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.shap-axis{display:flex;align-items:center;margin-bottom:10px;padding-left:130px}
-.shap-axis-left{flex:1;text-align:right;padding-right:12px;font-family:monospace;font-size:9px;color:#16a34a}
-.shap-axis-divider{width:1px;height:16px;background:rgba(15,23,42,.13);flex-shrink:0}
-.shap-axis-right{flex:1;padding-left:12px;font-family:monospace;font-size:9px;color:#dc2626}
-.shap-row{display:flex;align-items:center;height:28px;border-radius:4px;margin-bottom:2px;padding:0 4px}
-.shap-row.stripe{background:#f8fafc}
-.shap-feat{width:122px;flex-shrink:0;text-align:right;padding-right:10px;font-family:monospace;font-size:10.5px;color:#475569;white-space:nowrap;overflow:hidden}
-.shap-divider{width:1px;height:20px;background:rgba(15,23,42,.13);flex-shrink:0}
-.shap-left{flex:1;display:flex;align-items:center;justify-content:flex-end;padding-right:3px;overflow:hidden}
-.shap-right{flex:1;display:flex;align-items:center;padding-left:3px;overflow:hidden}
-.shap-bar{height:11px;transition:width .85s cubic-bezier(.34,1.56,.64,1)}
-.shap-bar.protective{border-radius:3px 0 0 3px;background:linear-gradient(to left,#bbf7d0,#16a34a)}
-.shap-bar.risk{border-radius:0 3px 3px 0;background:linear-gradient(to right,#fecaca,#dc2626)}
-.shap-val{width:42px;flex-shrink:0;text-align:left;padding-left:6px;font-family:monospace;font-size:10px;font-weight:700}
-
+.shax{display:flex;align-items:center;margin-bottom:8px;padding-left:115px}
+.shal{flex:1;text-align:right;padding-right:10px;font-family:var(--mono);font-size:9px;color:var(--green)}
+.shad{width:1px;height:14px;background:var(--bdr2);flex-shrink:0}
+.shar{flex:1;padding-left:10px;font-family:var(--mono);font-size:9px;color:var(--red)}
+.shr{display:flex;align-items:center;height:24px;border-radius:4px;margin-bottom:2px;padding:0 4px}
+.shr.s{background:rgba(255,255,255,.03)}
+.shf{width:113px;flex-shrink:0;text-align:right;padding-right:10px;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.shd{width:1px;height:17px;background:var(--bdr2);flex-shrink:0}
+.shl,.shrr{flex:1;display:flex;align-items:center;overflow:hidden;padding:0 3px}
+.shl{justify-content:flex-end}
+.shb{height:10px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.shb.p{border-radius:3px 0 0 3px;background:linear-gradient(to left,#238636,#3fb950)}
+.shb.r{border-radius:0 3px 3px 0;background:linear-gradient(to right,#da3633,#f85149)}
+.shv{width:38px;flex-shrink:0;padding-left:6px;font-family:var(--mono);font-size:10px;font-weight:700}
+/* RECOMMENDATIONS */
+.reccont{display:flex;flex-direction:column;gap:10px}
+.rec{border-radius:8px;padding:12px;border:1px solid transparent;animation:fadeIn .4s ease}
+.rect{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.recbadge{font-family:var(--mono);font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0}
+.recfactor{font-family:var(--mono);font-size:10px;font-weight:700}
+.recaction{font-size:11.5px;color:var(--sub);line-height:1.65}
+.recdivider{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.14em;margin:4px 0 2px}
 /* REPORT */
-.report-idle{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-.report-idle p{font-size:11px;color:#94a3b8;text-align:center;line-height:1.65;max-width:180px}
-.gen-btn{background:#2563eb;border:none;color:#fff;padding:9px 22px;border-radius:6px;font-family:monospace;font-size:10px;letter-spacing:.08em}
-.gen-btn:hover{opacity:.85}
-.spinner{width:26px;height:26px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .75s linear infinite}
-.report-text{font-size:11.5px;line-height:1.8;color:#0f172a;flex:1}
-.report-footer{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid rgba(15,23,42,.08)}
-.regen-btn{background:transparent;border:1px solid rgba(15,23,42,.08);color:#475569;padding:4px 10px;border-radius:4px;font-family:monospace;font-size:9px}
-
+.reparea{display:flex;flex-direction:column;flex:1;min-height:120px}
+.genbtn{background:var(--blue2);border:none;color:#fff;padding:8px 18px;border-radius:6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;cursor:pointer}
+.genbtn:hover{background:var(--blue3)}
+.spinner{width:22px;height:22px;border:2px solid var(--dim);border-top-color:var(--blue);border-radius:50%;animation:spin .75s linear infinite}
+.reptxt{font-size:11.5px;line-height:1.85;color:var(--sub)}
+.regen{background:transparent;border:1px solid var(--bdr2);color:var(--muted);padding:4px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer}
 /* AUDIT */
-.audit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
-.audit-item-label{display:flex;justify-content:space-between;margin-bottom:4px}
-.audit-item-name{font-family:monospace;font-size:9.5px;color:#475569}
-.audit-item-val{font-family:monospace;font-size:9.5px;font-weight:700}
-.audit-track{background:#e2e8f0;height:5px;border-radius:3px;overflow:hidden}
-.audit-fill{height:100%;transition:width .6s ease}
-.pipeline-status{display:flex;flex-direction:column;gap:5px}
-.status-row{display:flex;justify-content:space-between;align-items:center}
-.status-left{display:flex;align-items:center;gap:6px}
-.status-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.status-name{font-family:monospace;font-size:9px;color:#475569}
-.status-val{font-family:monospace;font-size:9px;font-weight:700}
-
-/* TECH DEPTH */
-.formula-box{background:#f8fafc;border-radius:8px;padding:10px 14px;margin-bottom:14px;border:1px solid rgba(15,23,42,.08);text-align:center}
-.formula-text{font-family:monospace;font-size:11px;color:#0f172a;line-height:1.8}
-.formula-note{font-family:monospace;font-size:9px;color:#94a3b8;margin-top:4px}
-.comp-card{border-radius:8px;padding:10px 12px;margin-bottom:10px;border:1px solid transparent}
-.comp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.comp-name{font-family:monospace;font-size:10px;font-weight:700}
-.comp-weight{font-family:monospace;font-size:8px;color:#94a3b8;background:#f8fafc;padding:1px 6px;border-radius:10px;border:1px solid rgba(15,23,42,.08)}
-.comp-score{font-family:monospace;font-size:16px;font-weight:700}
-.comp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.comp-tag{font-family:monospace;font-size:8.5px;color:#475569;background:#f8fafc;padding:2px 6px;border-radius:4px;border:1px solid rgba(15,23,42,.08)}
-
+.ag{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+.aar{display:flex;justify-content:space-between;margin-bottom:4px}
+.aan{font-family:var(--mono);font-size:9.5px;color:var(--sub)}
+.aav{font-family:var(--mono);font-size:9.5px;font-weight:700}
+.aat{background:var(--dim);height:5px;border-radius:3px;overflow:hidden}
+.aaf{height:100%;transition:width .6s ease}
+.stl{display:flex;flex-direction:column;gap:5px}
+.str{display:flex;justify-content:space-between;align-items:center}
+.stli{display:flex;align-items:center;gap:6px}
+.std{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.stn{font-family:var(--mono);font-size:9px;color:var(--sub)}
+.stv{font-family:var(--mono);font-size:9px;font-weight:700}
+/* TECH STACK */
+.techgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.techbadge{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid;font-family:var(--mono);font-size:10px;font-weight:600}
 /* IMPACT */
-.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.impact-card{background:#f8fafc;border-radius:8px;padding:12px;border:1px solid rgba(15,23,42,.08)}
-.impact-stat{font-family:monospace;font-size:20px;font-weight:700;color:#2563eb;margin-bottom:4px}
-.impact-title{font-size:11px;font-weight:600;color:#0f172a;margin-bottom:3px}
-.impact-detail{font-size:10px;color:#94a3b8;line-height:1.4}
-
-/* FOOTER */
-.footer{margin-top:14px;padding:10px 0;border-top:1px solid rgba(15,23,42,.08);display:flex;justify-content:space-between}
-.footer span{font-family:monospace;font-size:9px;color:#94a3b8}
+.impgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.impc{background:var(--card2);border-radius:8px;padding:14px;border:1px solid var(--bdr)}
+.imps{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--blue);margin-bottom:4px}
+.impt{font-size:11px;font-weight:600;margin-bottom:3px}
+.impd{font-size:10px;color:var(--muted);line-height:1.4}
+.whygrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.whyc{border-left:3px solid var(--blue2);padding:10px 14px;background:rgba(31,111,235,.08);border-radius:0 8px 8px 0}
+.whyt{font-size:12px;font-weight:600;color:var(--blue);margin-bottom:4px}
+.whyd{font-size:11px;color:var(--sub);line-height:1.6}
+/* TABLE */
+.rt{width:100%;border-collapse:collapse}
+.rt th{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;padding:6px 8px;border-bottom:1px solid var(--bdr);text-align:left}
+.rt td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;vertical-align:middle}
+.rt tr{cursor:pointer;transition:background .1s}
+.rt tr:hover td{background:rgba(255,255,255,.04)}
+.seccard{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:16px;margin-bottom:12px}
+.seccardl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.18em;margin-bottom:12px}
+.secbadge{font-family:var(--mono);font-size:8px;color:var(--sub);background:var(--card2);padding:2px 7px;border-radius:4px;border:1px solid var(--bdr)}
+.mfooter{margin-top:14px;padding:10px 0;border-top:1px solid var(--bdr);display:flex;justify-content:space-between}
+.mfooter span{font-family:var(--mono);font-size:9px;color:var(--muted)}
+/* TECH DEPTH */
+.fbox{background:var(--card2);border-radius:8px;padding:10px 14px;margin-bottom:14px;border:1px solid var(--bdr);text-align:center}
+.ftxt{font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.8}
+.fnote{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px}
+.compc{border-radius:8px;padding:10px 12px;margin-bottom:10px;border:1px solid transparent}
+.comph{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.compn{font-family:var(--mono);font-size:10px;font-weight:700}
+.compw{font-family:var(--mono);font-size:8px;color:var(--muted);background:var(--surf);padding:1px 6px;border-radius:10px;border:1px solid var(--bdr)}
+.comps{font-family:var(--mono);font-size:16px;font-weight:700}
+.compts{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.comptt{font-family:var(--mono);font-size:8.5px;color:var(--sub);background:var(--surf);padding:2px 6px;border-radius:4px;border:1px solid var(--bdr)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,81,73,.4)}70%{box-shadow:0 0 0 6px rgba(248,81,73,0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="topbar">
     <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-      <circle cx="13" cy="13" r="12" stroke="#2563eb" stroke-width="1" opacity=".3"/>
-      <circle cx="13" cy="13" r="7.5" stroke="#2563eb" stroke-width="1.4" opacity=".7"/>
-      <circle cx="13" cy="13" r="2.5" fill="#2563eb"/>
-      <line x1="13" y1="1.5" x2="13" y2="5.5" stroke="#2563eb" stroke-width="1.2" opacity=".4"/>
-      <line x1="13" y1="20.5" x2="13" y2="24.5" stroke="#2563eb" stroke-width="1.2" opacity=".4"/>
-      <line x1="1.5" y1="13" x2="5.5" y2="13" stroke="#2563eb" stroke-width="1.2" opacity=".4"/>
-      <line x1="20.5" y1="13" x2="24.5" y2="13" stroke="#2563eb" stroke-width="1.2" opacity=".4"/>
+      <circle cx="13" cy="13" r="12" stroke="#58a6ff" stroke-width="1" opacity=".4"/>
+      <circle cx="13" cy="13" r="7.5" stroke="#58a6ff" stroke-width="1.4" opacity=".7"/>
+      <circle cx="13" cy="13" r="2.5" fill="#58a6ff"/>
+      <line x1="13" y1="1.5" x2="13" y2="5.5" stroke="#58a6ff" stroke-width="1.2" opacity=".5"/>
+      <line x1="13" y1="20.5" x2="13" y2="24.5" stroke="#58a6ff" stroke-width="1.2" opacity=".5"/>
+      <line x1="1.5" y1="13" x2="5.5" y2="13" stroke="#58a6ff" stroke-width="1.2" opacity=".5"/>
+      <line x1="20.5" y1="13" x2="24.5" y2="13" stroke="#58a6ff" stroke-width="1.2" opacity=".5"/>
     </svg>
-    <span class="tb-logo">TRUSTLENS</span>
-    <span class="tb-sub">Decision Intelligence Platform</span>
+    <span class="logo-txt">TRUSTLENS</span>
+    <span class="logo-sub">Decision Intelligence Platform</span>
     <div style="flex:1"></div>
-    <div class="tb-chip" id="chip-analysed" style="background:#eff6ff;border-color:rgba(37,99,235,.2)">
-      <span class="tb-chip-label">Analysed</span>
-      <span class="tb-chip-val" style="color:#2563eb">25</span>
-    </div>
-    <div class="tb-chip" id="chip-high" style="background:#fef2f2;border-color:rgba(220,38,38,.2)">
-      <span class="tb-chip-label">High Risk</span>
-      <span class="tb-chip-val" style="color:#dc2626" id="chip-high-val">—</span>
-    </div>
-    <div class="tb-chip" id="chip-critical" style="background:#fff1f2;border-color:rgba(220,38,38,.2)">
-      <span class="tb-chip-label">⚠ Critical</span>
-      <span class="tb-chip-val" style="color:#dc2626" id="chip-critical-val">—</span>
-    </div>
-    <div class="tb-chip" style="background:#f0fdf4;border-color:rgba(22,163,74,.2)">
-      <span class="tb-chip-label">Avg Trust</span>
-      <span class="tb-chip-val" style="color:#16a34a" id="chip-avgtrust">—</span>
-    </div>
-    <span class="eu-badge">EU AI ACT 2024</span>
+    <div class="chip"><span class="cl">Analysed</span><span class="cv" style="color:var(--blue)">25</span></div>
+    <div class="chip"><span class="cl">High Risk</span><span class="cv" style="color:var(--red)" id="cv-hr">—</span></div>
+    <div class="chip"><span class="cl">⚠ Critical</span><span class="cv" style="color:var(--red)" id="cv-cr">—</span></div>
+    <div class="chip"><span class="cl">Avg Trust</span><span class="cv" style="color:var(--green)" id="cv-at">—</span></div>
+    <span class="eu-pill">EU AI ACT 2024</span>
   </div>
-
   <div id="body">
     <div id="sidebar">
-      <div class="search-wrap">
-        <input id="search" type="text" placeholder="Search employees..." oninput="filterList()"/>
-      </div>
-      <div id="sidebar-list">
-        <div class="sidebar-header" id="emp-count-label">EMPLOYEES (25)</div>
-        <div id="emp-list"></div>
-      </div>
-      <div class="dist-wrap">
-        <div class="dist-label">TRUST DISTRIBUTION</div>
-        <div class="dist-bars" id="dist-bars"></div>
+      <div class="ss"><input id="si" type="text" placeholder="Search employees…" oninput="filterSide()"/></div>
+      <div id="sl"><div class="sh" id="sh">EMPLOYEES (25)</div><div id="se"></div></div>
+      <div class="sdist">
+        <div class="sdl">TRUST DISTRIBUTION</div>
+        <div class="sdb" id="sdb"></div>
       </div>
     </div>
-
-    <div id="main"></div>
+    <div id="right">
+      <div id="vtabs">
+        <button class="vt active" id="vt-f" onclick="showFleet()">Fleet Overview</button>
+        <button class="vt" id="vt-d" style="display:none" onclick="if(selId)showDetail(selId)">Employee Detail</button>
+      </div>
+      <div id="main"></div>
+    </div>
   </div>
 </div>
-
 <script>
-/* ── DATA ── */
-const DEPT={
-  "Sales":{bg:"#dbeafe",fg:"#1e40af"},
-  "R&D":{bg:"#ede9fe",fg:"#5b21b6"},
-  "Human Resources":{bg:"#ccfbf1",fg:"#0f766e"},
-  "Finance":{bg:"#dcfce7",fg:"#166534"},
-  "Operations":{bg:"#ffedd5",fg:"#9a3412"},
-  "IT":{bg:"#e0e7ff",fg:"#3730a3"},
-  "Marketing":{bg:"#fce7f3",fg:"#9d174d"},
-  "Legal":{bg:"#fef3c7",fg:"#92400e"},
+/* ── DEPT COLORS ── */
+const DC={
+  "Sales":{bg:"rgba(30,64,175,.25)",fg:"#93c5fd"},
+  "R&D":{bg:"rgba(91,33,182,.25)",fg:"#c4b5fd"},
+  "Human Resources":{bg:"rgba(15,118,110,.25)",fg:"#5eead4"},
+  "Finance":{bg:"rgba(22,101,52,.25)",fg:"#86efac"},
+  "Operations":{bg:"rgba(154,52,18,.25)",fg:"#fdba74"},
+  "IT":{bg:"rgba(55,48,163,.25)",fg:"#a5b4fc"},
+  "Marketing":{bg:"rgba(157,23,77,.25)",fg:"#f9a8d4"},
+  "Legal":{bg:"rgba(146,64,14,.25)",fg:"#fde68a"},
 };
+/* ── DATASET ── */
 const EMPS=[
   {id:"E01",name:"Sarah Chen",role:"Sales Executive",dept:"Sales",age:35,tenure:3,ot:"Yes",income:4500,dist:15,prev:5,risk:0.82,dq:94,miss:0,out:1,conf:88,ts:71,shap:{"Overtime":0.31,"Job Satisfaction":0.26,"Work-Life Balance":0.19,"Companies Worked":0.13,"Distance":0.07,"Age":-0.04,"Tenure":-0.09,"Income":-0.14}},
   {id:"E02",name:"James Rodriguez",role:"Lab Technician",dept:"R&D",age:27,tenure:1,ot:"Yes",income:2900,dist:22,prev:4,risk:0.91,dq:89,miss:2,out:1,conf:82,ts:58,shap:{"Job Satisfaction":0.35,"Overtime":0.27,"Income":0.19,"Tenure":0.15,"Companies Worked":0.11,"Distance":0.09,"Work-Life Balance":0.06,"Age":-0.04}},
@@ -272,97 +281,90 @@ const EMPS=[
 ];
 
 /* ── HELPERS ── */
-function sCol(s){return s>=80?"#16a34a":s>=60?"#d97706":"#dc2626"}
-function sBg(s){return s>=80?"#f0fdf4":s>=60?"#fffbeb":"#fef2f2"}
-function rLbl(r){return r>=0.7?"HIGH RISK":r>=0.4?"MEDIUM":"LOW RISK"}
-function initials(n){return n.split(" ").map(w=>w[0]).slice(0,2).join("")}
-function fmt(n){return n.toLocaleString()}
+const sCol=s=>s>=80?"#3fb950":s>=60?"#d29922":"#f85149";
+const sBg=s=>s>=80?"rgba(63,185,80,.1)":s>=60?"rgba(210,153,34,.1)":"rgba(248,81,73,.1)";
+const rCol=r=>r>=0.7?"#f85149":r>=0.4?"#d29922":"#3fb950";
+const rLbl=r=>r>=0.7?"HIGH RISK":r>=0.4?"MEDIUM RISK":"LOW RISK";
+const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("");
+const fmt=n=>n.toLocaleString();
 
-function getAnomaly(e){
-  if(e.risk>=0.7&&e.ts<65) return{type:"CRITICAL",label:"⚠ High Risk + Low Trust — Do Not Act",detail:"The prediction is high-risk but the Trust Score is too low to act on. Manual manager review is mandatory before any HR action.",color:"#dc2626",bg:"#fff1f2"};
-  if(e.risk>=0.7&&e.ts>=65&&e.ts<80) return{type:"WARNING",label:"⚡ High Risk — Verify Before Acting",detail:"Risk signal is real but Trust Score suggests reviewing data completeness before proceeding.",color:"#d97706",bg:"#fffbeb"};
-  if(e.risk<0.3&&e.dq<92) return{type:"DATA",label:"🔍 Low Risk — Data Quality Caution",detail:"Risk appears low but data quality is below threshold. Treat this prediction with caution.",color:"#d97706",bg:"#fffbeb"};
-  if(e.risk>=0.7&&e.ts>=80) return{type:"ACT",label:"✓ High Risk — Prediction Reliable",detail:"Both attrition risk and Trust Score are high. HR intervention is warranted and well-supported by data.",color:"#16a34a",bg:"#f0fdf4"};
+function getAnom(e){
+  if(e.risk>=0.7&&e.ts<65)return{type:"CRITICAL",label:"⚠ High Risk + Low Trust — Do Not Act",detail:`Risk is ${Math.round(e.risk*100)}% but Trust Score is only ${e.ts}/100. Prediction unreliable — mandatory manager review before any HR action.`,col:"#f85149",bg:"rgba(248,81,73,.08)"};
+  if(e.risk>=0.7&&e.ts<80)return{type:"WARNING",label:"⚡ High Risk — Verify Before Acting",detail:`${Math.round(e.risk*100)}% attrition risk detected. Trust Score of ${e.ts} is acceptable but human review is recommended before proceeding.`,col:"#d29922",bg:"rgba(210,153,34,.08)"};
+  if(e.risk>=0.7&&e.ts>=80)return{type:"ACT",label:"✓ High Risk — Prediction Reliable",detail:`${Math.round(e.risk*100)}% attrition risk with Trust Score ${e.ts}/100. Both signals are high — HR intervention is data-supported and warranted.`,col:"#3fb950",bg:"rgba(63,185,80,.08)"};
   return null;
 }
 
-function narrative(e){
-  const rp=Math.round(e.risk*100);
+/* ── AUTO HR RECOMMENDATION ENGINE ── */
+const REC_MAP={
+  "Overtime":{risk:"Schedule a workload review with the line manager this week. Assess task redistribution options and evaluate if overtime is systemic or temporary.",protect:"Overtime is within acceptable limits. Monitor on the next quarterly review."},
+  "Job Satisfaction":{risk:"Initiate a structured stay interview immediately. Identify specific drivers of dissatisfaction before escalating to a retention package discussion.",protect:"High job satisfaction is a strong retention anchor. Maintain through regular recognition, clear goals, and growth opportunities."},
+  "Work-Life Balance":{risk:"Explore flexible working arrangements (hybrid schedule, compressed hours). Review the employee's meeting load and after-hours expectations with their manager.",protect:"Strong work-life balance is actively reducing attrition risk. Protect this through manager coaching and workload monitoring."},
+  "Income":{risk:"Benchmark this role against market rate for the employee's tenure and location. A compensation review is recommended before the next performance cycle.",protect:"Competitive compensation is a key retention factor. Maintain market positioning through annual benchmarking."},
+  "Tenure":{risk:"Early-tenure employees need a clear 12-month development roadmap. Assign a buddy or mentor and schedule structured 30/60/90-day check-ins immediately.",protect:"Long tenure indicates strong organisational embeddedness. Leverage this employee as a culture carrier and knowledge sharer."},
+  "Companies Worked":{risk:"Multiple prior employers signal risk of short-tenure departure. Accelerate the career development conversation and set visible 6-month milestones to build commitment.",protect:"Stable employment history is a positive retention indicator. No specific action required."},
+  "Distance":{risk:"Long commute is a friction factor. Discuss remote or hybrid work options, or explore commuter support benefits with HR.",protect:"Proximity to office reduces attrition friction. No commute-related action needed."},
+  "Age":{risk:"Review role fit and career stage alignment. Ensure growth opportunities and responsibilities are appropriate to career expectations.",protect:"Age profile aligns with stable retention patterns. No immediate action required."},
+};
+
+function buildRecs(e){
   const sorted=Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
-  const [f1,v1]=sorted[0],[f2,v2]=sorted[1];
+  const recs=[];
+  // Trust-based warning first
+  if(e.ts<65){
+    recs.push({priority:"CRITICAL",col:"#f85149",bg:"rgba(248,81,73,.08)",factor:"Low Trust Score Alert",pct:e.ts,action:`Trust Score is ${e.ts}/100 — prediction reliability is insufficient for direct action. Collect qualitative input from the employee's manager and conduct a manual data quality review before proceeding.`,icon:"⚠"});
+  }
+  // Top 3 risk/protect factors
+  const labels=["HIGH","MEDIUM","LOW"];
+  const cols=["#f85149","#d29922","#58a6ff"];
+  const bgs=["rgba(248,81,73,.08)","rgba(210,153,34,.08)","rgba(88,166,255,.08)"];
+  sorted.filter(([,v])=>Math.abs(v)>0.05).slice(0,3).forEach(([f,v],i)=>{
+    const map=REC_MAP[f];
+    const action=map?(v>0?map.risk:map.protect):`Review the impact of ${f} through a direct conversation with the employee.`;
+    recs.push({priority:labels[i],col:cols[i],bg:bgs[i],factor:f,pct:Math.round(Math.abs(v)*100),action,icon:v>0?"↑":"↓",isRisk:v>0});
+  });
+  return recs.slice(0,4);
+}
+
+/* ── NARRATIVE ENGINE ── */
+function buildNarrative(e){
+  const rp=Math.round(e.risk*100);
+  const s=Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
+  const [f1,v1]=s[0],[f2,v2]=s[1];
   const lv=e.risk>=0.7?"elevated":e.risk>=0.4?"moderate":"low";
   const vb=e.risk>=0.7?"warrants immediate HR intervention":e.risk>=0.4?"should be monitored proactively":"reflects a stable retention profile";
-  const s1=`The XGBoost model assigns ${e.name} a ${rp}% probability of departure — ${lv} risk that ${vb}.`;
-  const s2=`${f1} is the ${v1>0?"primary risk amplifier":"strongest retention anchor"}, contributing ${Math.round(Math.abs(v1)*100)} percentage points${v1>0?"; this should be the first focus for HR intervention.":"; this factor is actively working in the employee's favour."}`;
-  const s3=`${f2} ${v2>0?"compounds the risk":"partially offsets elevated factors"} by a further ${Math.round(Math.abs(v2)*100)} points${v2>0?", suggesting a compounding pattern that increases urgency.":"."}`;
-  const s4=`Decision Trust Score: ${e.ts}/100 (Data Quality ${e.dq}/100, Model Confidence ${e.conf}%) — ${e.ts>=80?"reliable for direct decision-making":e.ts>=60?"human review recommended":"cross-verify with manager input before any action"}.`;
-  const s5="EU AI Act Art. 6(2): HIGH-RISK employment prediction — a qualified HR professional must review and sign off before implementation.";
-  return [s1,s2,s3,s4,s5].join(" ");
+  return[
+    `The XGBoost model assigns ${e.name} a ${rp}% probability of departure — ${lv} risk that ${vb}.`,
+    `${f1} is the ${v1>0?"primary risk amplifier":"strongest retention anchor"}, contributing ${Math.round(Math.abs(v1)*100)}pts${v1>0?"; first focus for HR intervention.":"; working in the employee's favour."}`,
+    `${f2} ${v2>0?"compounds the risk":"partially offsets factors"} by ${Math.round(Math.abs(v2)*100)}pts${v2>0?", signalling compounding urgency.":"."}`,
+    `Decision Trust Score ${e.ts}/100 (Data Quality ${e.dq}/100 · Model Confidence ${e.conf}%) — ${e.ts>=80?"reliable for direct decision-making":e.ts>=60?"human review recommended":"verify with manager before any action"}.`,
+    `EU AI Act Art. 6(2): HIGH-RISK employment prediction — a qualified HR professional must review and sign off before any employment action is taken.`
+  ].join(" ");
 }
 
-/* ── STATS ── */
-const high=EMPS.filter(e=>e.risk>=0.7).length;
-const med=EMPS.filter(e=>e.risk>=0.4&&e.risk<0.7).length;
-const avgTs=Math.round(EMPS.reduce((s,e)=>s+e.ts,0)/EMPS.length);
-const critical=EMPS.filter(e=>getAnomaly(e)?.type==="CRITICAL").length;
-document.getElementById("chip-high-val").textContent=high;
-document.getElementById("chip-critical-val").textContent=critical;
-document.getElementById("chip-avgtrust").textContent=avgTs;
-
-/* ── DIST BARS ── */
-const bands=[{l:"0-59",c:"#dc2626",n:EMPS.filter(e=>e.ts<60).length},{l:"60-79",c:"#d97706",n:EMPS.filter(e=>e.ts>=60&&e.ts<80).length},{l:"80-100",c:"#16a34a",n:EMPS.filter(e=>e.ts>=80).length}];
-const mx=Math.max(...bands.map(b=>b.n));
-document.getElementById("dist-bars").innerHTML=bands.map(b=>`
-  <div class="dist-col">
-    <span class="dist-count" style="color:${b.c}">${b.n}</span>
-    <div class="dist-track"><div class="dist-fill" style="height:${(b.n/mx)*28}px;background:${b.c}"></div></div>
-    <span class="dist-range">${b.l}</span>
-  </div>`).join("");
-
-/* ── STATE ── */
-let selId=EMPS[0].id, curTab="overview", curReport=null;
-
-/* ── SIDEBAR ── */
-function filterList(){
-  const q=document.getElementById("search").value.toLowerCase();
-  const filtered=EMPS.filter(e=>e.name.toLowerCase().includes(q)||e.role.toLowerCase().includes(q)||e.dept.toLowerCase().includes(q));
-  document.getElementById("emp-count-label").textContent=`EMPLOYEES (${filtered.length})`;
-  document.getElementById("emp-list").innerHTML=filtered.map(e=>empCardHTML(e)).join("");
-}
-
-function empCardHTML(e){
-  const tc=sCol(e.ts), rc=e.risk>=0.7?"#dc2626":e.risk>=0.4?"#d97706":"#16a34a";
-  const d=DEPT[e.dept]||{bg:"#e2e8f0",fg:"#475569"};
-  const ini=initials(e.name);
-  const isActive=e.id===selId;
-  const anom=getAnomaly(e);
-  const pulse=anom&&anom.type==="CRITICAL"?`<div class="pulse-dot"></div>`:"";
-  return `<div class="emp-card ${isActive?"active":""}" onclick="selectEmp('${e.id}')">
-    <div style="width:34px;height:34px;border-radius:50%;background:${d.bg};color:${d.fg};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:12px;font-weight:700;flex-shrink:0">${ini}</div>
-    <div class="emp-meta">
-      <div class="emp-name ${isActive?"active":""}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</span><span style="font-family:monospace;font-size:11px;color:${tc};font-weight:700;flex-shrink:0;margin-left:6px">${e.ts}</span></div>
-      <div class="emp-role">${e.role}</div>
-      <div class="emp-bar-row">
-        <div class="emp-bar-track"><div class="emp-bar-fill" style="width:${e.ts}%;background:${tc}"></div></div>
-        <span class="emp-risk-pct" style="color:${rc}">${Math.round(e.risk*100)}%</span>
-        ${pulse}
-      </div>
-    </div>
-  </div>`;
-}
-
-function selectEmp(id){selId=id;curReport=null;render();filterList();}
-
-/* ── GAUGE ── */
-function gaugeHTML(score,size){
-  const r=44,circ=2*Math.PI*r,arc=(score/100)*circ,col=sCol(score);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="8"/>
-    <circle cx="50" cy="50" r="${r}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round"
-      stroke-dasharray="${arc} ${circ}" transform="rotate(-90 50 50)"
-      style="transition:stroke-dasharray 1.1s cubic-bezier(.34,1.56,.64,1)"/>
-    <text x="50" y="46" text-anchor="middle" fill="${col}" font-size="22" font-weight="700" font-family="monospace">${score}</text>
-    <text x="50" y="60" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="monospace">/100</text>
+/* ── SPEEDOMETER ── */
+function speedoSVG(score,size=240){
+  const cx=size/2,cy=size*0.60,R=size*0.40,r=size*0.26,nR=size*0.34;
+  const zones=[{a1:150,a2:186,c:"#6e7681"},{a1:190,a2:230,c:"#f85149"},{a1:234,a2:270,c:"#d29922"},{a1:274,a2:310,c:"#58a6ff"},{a1:314,a2:350,c:"#388bfd"},{a1:354,a2:390,c:"#1f6feb"}];
+  const na=150+(score/100)*240;
+  const p=(rad,a)=>({x:cx+rad*Math.cos(a*Math.PI/180),y:cy+rad*Math.sin(a*Math.PI/180)});
+  function arcD(R,r,a1,a2){const lg=(a2-a1)>180?1:0;const p1=p(R,a1),p2=p(R,a2),p3=p(r,a2),p4=p(r,a1);return`M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${R},${R} 0 ${lg},1 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} L${p3.x.toFixed(1)},${p3.y.toFixed(1)} A${r},${r} 0 ${lg},0 ${p4.x.toFixed(1)},${p4.y.toFixed(1)} Z`}
+  const ndl=p(nR,na),nb1=p(r*0.25,na+90),nb2=p(r*0.25,na-90);
+  const col=sCol(score);
+  const activeZ=zones.find(z=>na>=z.a1&&na<=z.a2)||zones[Math.floor(score/17)%6]||zones[5];
+  return`<svg width="${size}" height="${size*0.72}" viewBox="0 0 ${size} ${size*0.72}" style="overflow:visible">
+    <defs><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <path d="${arcD(R,r,150,390)}" fill="#21262d"/>
+    ${zones.map(z=>`<path d="${arcD(R,r,z.a1,z.a2)}" fill="${z.c}" opacity="${z.c===activeZ.c?1:.5}"/>`).join('')}
+    ${zones.slice(0,-1).map(z=>{const pp=p(R+2,z.a2),qq=p(r-2,z.a2);return`<line x1="${pp.x.toFixed(1)}" y1="${pp.y.toFixed(1)}" x2="${qq.x.toFixed(1)}" y2="${qq.y.toFixed(1)}" stroke="#0d1117" stroke-width="3"/>`;}).join('')}
+    <polygon points="${ndl.x.toFixed(1)},${ndl.y.toFixed(1)} ${nb1.x.toFixed(1)},${nb1.y.toFixed(1)} ${nb2.x.toFixed(1)},${nb2.y.toFixed(1)}" fill="white" opacity=".9" filter="url(#glow)"/>
+    <circle cx="${cx}" cy="${cy}" r="${size*0.055}" fill="#161b22" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="${size*0.022}" fill="white"/>
+    <text x="${cx}" y="${cy-size*0.04}" text-anchor="middle" fill="${col}" font-size="${size*0.14}" font-weight="700" font-family="monospace" filter="url(#glow)">${score}</text>
+    <text x="${cx}" y="${cy+size*0.065}" text-anchor="middle" fill="#8b949e" font-size="${size*0.042}" font-family="monospace">/100</text>
+    <text x="${p(R+size*.09,150).x.toFixed(1)}" y="${(p(R+size*.09,150).y+5).toFixed(1)}" text-anchor="middle" fill="#6e7681" font-size="${size*.038}" font-family="monospace">0</text>
+    <text x="${p(R+size*.1,270).x.toFixed(1)}" y="${(p(R+size*.1,270).y+4).toFixed(1)}" text-anchor="middle" fill="#6e7681" font-size="${size*.038}" font-family="monospace">50</text>
+    <text x="${(p(R+size*.09,390).x-4).toFixed(1)}" y="${(p(R+size*.09,390).y+5).toFixed(1)}" text-anchor="middle" fill="#6e7681" font-size="${size*.038}" font-family="monospace">100</text>
   </svg>`;
 }
 
@@ -370,327 +372,320 @@ function gaugeHTML(score,size){
 function shapHTML(shap){
   const rows=Object.entries(shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
   const mx=Math.max(...rows.map(([,v])=>Math.abs(v)));
-  return `<div class="shap-axis">
-    <div class="shap-axis-left">← protective factors</div>
-    <div class="shap-axis-divider"></div>
-    <div class="shap-axis-right">risk factors →</div>
-  </div>`+rows.map(([f,v],i)=>{
-    const pct=(Math.abs(v)/mx)*100,pos=v>0,col=pos?"#dc2626":"#16a34a";
-    return `<div class="shap-row ${i%2===0?"stripe":""}">
-      <div class="shap-feat">${f}</div>
-      <div class="shap-divider"></div>
-      <div class="shap-left">${!pos?`<div class="shap-bar protective" style="width:${pct}%"></div>`:""}</div>
-      <div class="shap-right">${pos?`<div class="shap-bar risk" style="width:${pct}%"></div>`:""}</div>
-      <div class="shap-val" style="color:${col}">${pos?"+":""}${(v*100).toFixed(0)}%</div>
-    </div>`;
-  }).join("");
+  return`<div class="shax"><div class="shal">← protective</div><div class="shad"></div><div class="shar">risk →</div></div>`+
+  rows.map(([f,v],i)=>{const pct=(Math.abs(v)/mx)*100,pos=v>0,c=pos?"#f85149":"#3fb950";
+    return`<div class="shr${i%2?" s":""}"><div class="shf">${f}</div><div class="shd"></div><div class="shl">${!pos?`<div class="shb p" style="width:${pct}%"></div>`:""}</div><div class="shrr">${pos?`<div class="shb r" style="width:${pct}%"></div>`:""}</div><div class="shv" style="color:${c}">${pos?"+":""}${(v*100).toFixed(0)}%</div></div>`;
+  }).join('');
 }
 
-/* ── PIPELINE ── */
-function pipelineHTML(){
-  const steps=[
-    {l:"Raw Data",s:"1,470 records",c:"#2563eb",bg:"#eff6ff"},
-    {l:"ETL Cleaning",s:"Nulls + Outliers",c:"#7c3aed",bg:"#f5f3ff"},
-    {l:"Feature Eng.",s:"23 numeric · 7 cat",c:"#d97706",bg:"#fffbeb"},
-    {l:"XGBoost",s:"AUC 0.87",c:"#dc2626",bg:"#fef2f2"},
-    {l:"TrustLens",s:"DQ + Conf + SHAP",c:"#16a34a",bg:"#f0fdf4"},
-    {l:"Decision",s:"Score · Report · Flag",c:"#2563eb",bg:"#eff6ff"},
-  ];
-  return `<div class="section">
-    <div class="section-label">DATA PIPELINE · Raw Data → ETL Cleaning → Feature Engineering → Model → TrustLens → Decision Output</div>
-    <div class="pipeline">${steps.map((s,i)=>`
-      <div class="pipe-step" style="background:${s.bg};border-color:${s.c}22">
-        <div class="pipe-name" style="color:${s.c}">${s.l}</div>
-        <div class="pipe-sub">${s.s}</div>
-      </div>${i<steps.length-1?'<div class="pipe-arrow">→</div>':""}`).join("")}
-    </div>
-  </div>`;
+/* ── SVG CHARTS ── */
+function hBar(items,w,h){
+  const bH=22,gap=5;h=h||(items.length*(bH+gap)+8);
+  const mx=Math.max(...items.map(i=>i.val));const lw=90;
+  return`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${items.map((it,i)=>{const y=i*(bH+gap);const bw=(it.val/mx)*(w-lw-42);const c=it.col||rCol(it.val/100);return`<text x="${lw-4}" y="${y+bH/2+4}" text-anchor="end" fill="#8b949e" font-size="10" font-family="monospace">${(it.lbl||"").substring(0,11)}</text><rect x="${lw}" y="${y}" width="${bw}" height="${bH}" rx="3" fill="${c}" opacity=".75"/><text x="${lw+bw+5}" y="${y+bH/2+4}" fill="${c}" font-size="10" font-family="monospace" font-weight="700">${it.val}${it.unit||"%"}</text>`;}).join('')}</svg>`;
+}
+
+function vBar(items,w,h){
+  const mx=Math.max(...items.map(i=>i.n));const bw=Math.floor((w-(items.length+1)*8)/items.length);
+  return`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${items.map((it,i)=>{const x=8+i*(bw+8);const bh=(it.n/mx)*(h-40);const y=h-22-bh;return`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" fill="${it.c}" font-size="11" font-family="monospace" font-weight="700">${it.n}</text><rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="${it.c}" opacity=".75"/><text x="${x+bw/2}" y="${h-5}" text-anchor="middle" fill="#6e7681" font-size="8" font-family="monospace">${it.lbl}</text>`;}).join('')}</svg>`;
+}
+
+function donut(segs,size){
+  const cx=size/2,cy=size/2,R=size*0.4,r=size*0.25;let a=0;
+  const xy=(rad,ang)=>({x:cx+rad*Math.cos(ang),y:cy+rad*Math.sin(ang)});
+  function sl(s,sw,col){const e=s+sw;const lg=sw>Math.PI?1:0;const p1=xy(R,s),p2=xy(R,e),p3=xy(r,e),p4=xy(r,s);return`<path d="M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${R},${R} 0 ${lg},1 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} L${p3.x.toFixed(1)},${p3.y.toFixed(1)} A${r},${r} 0 ${lg},0 ${p4.x.toFixed(1)},${p4.y.toFixed(1)} Z" fill="${col}" opacity=".85"/>`;}
+  const tot=segs.reduce((s,sg)=>s+sg.val,0);
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${segs.map(sg=>{const sw=(sg.val/tot)*2*Math.PI*0.96;const s=sl(a,sw,sg.col);a+=sw+(2*Math.PI*0.04/segs.length);return s;}).join('')}</svg>`;
+}
+
+/* ── AGGREGATE FLEET DATA ── */
+function fleetData(){
+  const dm={};
+  EMPS.forEach(e=>{if(!dm[e.dept])dm[e.dept]={c:0,hr:0,tr:0,tt:0};dm[e.dept].c++;if(e.risk>=0.7)dm[e.dept].hr++;dm[e.dept].tr+=e.risk;dm[e.dept].tt+=e.ts;});
+  const depts=Object.entries(dm).map(([d,v])=>({lbl:d.length>9?d.slice(0,8)+'…':d,val:Math.round(v.tr/v.c*100),ts:Math.round(v.tt/v.c),count:v.c,hr:v.hr,col:rCol(v.tr/v.c)})).sort((a,b)=>b.val-a.val);
+  const tsDist=[{lbl:"0-59",n:EMPS.filter(e=>e.ts<60).length,c:"#f85149"},{lbl:"60-69",n:EMPS.filter(e=>e.ts>=60&&e.ts<70).length,c:"#d29922"},{lbl:"70-79",n:EMPS.filter(e=>e.ts>=70&&e.ts<80).length,c:"#58a6ff"},{lbl:"80-89",n:EMPS.filter(e=>e.ts>=80&&e.ts<90).length,c:"#3fb950"},{lbl:"90+",n:EMPS.filter(e=>e.ts>=90).length,c:"#1f6feb"}];
+  const incBands=[{lbl:"<$4K",min:0,max:4000},{lbl:"$4-8K",min:4000,max:8000},{lbl:"$8-12K",min:8000,max:12000},{lbl:"$12K+",min:12000,max:99999}];
+  const inc=incBands.map(b=>{const g=EMPS.filter(e=>e.income>=b.min&&e.income<b.max);const ar=g.length?Math.round(g.reduce((s,e)=>s+e.risk,0)/g.length*100):0;return{lbl:b.lbl,val:ar,col:rCol(ar/100),unit:"%"};});
+  const gShap={};
+  EMPS.filter(e=>e.risk>=0.7).forEach(e=>{Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).slice(0,3).forEach(([f,v])=>{if(v>0){if(!gShap[f])gShap[f]=0;gShap[f]++;}});});
+  const gsl=Object.entries(gShap).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([f,n])=>({lbl:f,val:n,unit:"×",col:"#f85149"}));
+  return{depts,tsDist,inc,gsl};
 }
 
 /* ── EXPORT ── */
 function doExport(){
-  const e=EMPS.find(x=>x.id===selId);
-  const top=Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).slice(0,4);
-  const anom=getAnomaly(e);
-  const txt=`TRUSTLENS DECISION REPORT
-Generated: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
-${"─".repeat(60)}
-
-EMPLOYEE PROFILE
-Name          : ${e.name}
-Role          : ${e.role}
-Department    : ${e.dept}
-Employee ID   : ${e.id}
-Age / Tenure  : ${e.age} yrs · ${e.tenure} yrs at company
-Monthly Income: $${fmt(e.income)}
-Overtime      : ${e.ot}
-
-${"─".repeat(60)}
-
-PREDICTION SUMMARY
-Attrition Risk      : ${Math.round(e.risk*100)}%  (${rLbl(e.risk)})
-Decision Trust Score: ${e.ts}/100
-  Data Quality      : ${e.dq}/100  (${e.miss} missing · ${e.out} outlier)
-  Model Confidence  : ${e.conf}%  (XGBoost)
-
-Trust Score Formula : (DQ × 0.40) + (Confidence × 0.40) + (SHAP Clarity × 0.20)
-
-${"─".repeat(60)}
-
-TOP RISK DRIVERS (SHAP)
-${top.map(([f,v])=>`  ${v>0?"▲":"▼"} ${f.padEnd(28)} ${v>0?"+":""}${(v*100).toFixed(0)}%`).join("\n")}
-
-${"─".repeat(60)}
-
-ANOMALY FLAG
-${anom?`${anom.type}: ${anom.label}\n${anom.detail}`:"No anomalies. Standard workflow applies."}
-
-${"─".repeat(60)}
-
-DECISION REPORT
-${curReport||"Report not generated yet."}
-
-${"─".repeat(60)}
-
-EU AI ACT COMPLIANCE
-Classification : HIGH RISK — Employment Decision System
-Legal Reference: Article 6(2) · Annex III · Point 4
-Obligation     : Human sign-off required before any employment action.
-
-${"─".repeat(60)}
-TrustLens v3.0 · Swarnadeep Chatterjee · MBA, University of Louisville
-github.com/swarnadeepchatterjee02-glitch/trustlens`;
-
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([txt],{type:"text/plain"}));
-  a.download=`TrustLens_${e.id}_${e.name.replace(/\s/g,"_")}.txt`;
-  a.click();
+  const e=EMPS.find(x=>x.id===selId);if(!e)return;
+  const recs=buildRecs(e);
+  const txt=`TRUSTLENS DECISION REPORT\nGenerated: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}\n${"─".repeat(60)}\n\nEMPLOYEE: ${e.name} | ${e.role} | ${e.dept} | ${e.id}\nAge: ${e.age}  Tenure: ${e.tenure}yr  Income: $${fmt(e.income)}/mo  Overtime: ${e.ot}\n\n${"─".repeat(60)}\nPREDICTION\nAttrition Risk : ${Math.round(e.risk*100)}%  (${rLbl(e.risk)})\nTrust Score    : ${e.ts}/100\n  Data Quality  : ${e.dq}/100 (${e.miss} missing · ${e.out} outliers)\n  Model Conf.   : ${e.conf}%\nFormula        : (DQ × 0.40) + (Confidence × 0.40) + (SHAP Clarity × 0.20)\n\n${"─".repeat(60)}\nHR ACTION RECOMMENDATIONS\n${recs.map((r,i)=>`\n[${r.priority}] ${r.factor} (${r.pct})\n→ ${r.action}`).join('')}\n\n${"─".repeat(60)}\nNARRATIVE REPORT\n${curReport||"Not yet generated — click Generate Report in dashboard."}\n\n${"─".repeat(60)}\nEU AI ACT: HIGH-RISK (Art. 6(2) Annex III)\nHuman sign-off required before any employment action.\n${"─".repeat(60)}\nTrustLens v5.0 · Swarnadeep Chatterjee · MBA, University of Louisville\ngithub.com/swarnadeepchatterjee02-glitch/trustlens`;
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/plain"}));a.download=`TrustLens_${e.id}_${e.name.replace(/\s/g,"_")}.txt`;a.click();
 }
 
-/* ── REPORT ── */
-function generateReport(){
+function genReport(){
   const e=EMPS.find(x=>x.id===selId);
-  document.getElementById("report-area").innerHTML=`<div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px"><div class="spinner"></div><span style="font-family:monospace;font-size:10px;color:#94a3b8">Running rule engine...</span></div>`;
-  setTimeout(()=>{
-    curReport=narrative(e);
-    document.getElementById("report-area").innerHTML=`
-      <p class="report-text">${curReport}</p>
-      <div class="report-footer">
-        <span style="font-family:monospace;font-size:8px;color:#94a3b8">For informational use · HR review required</span>
-        <button class="regen-btn" onclick="generateReport()">↺ Regenerate</button>
-      </div>`;
-  },800);
+  document.getElementById("ra").innerHTML=`<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px"><div class="spinner"></div><span style="font-family:monospace;font-size:10px;color:var(--muted)">Running rule engine…</span></div>`;
+  setTimeout(()=>{curReport=buildNarrative(e);document.getElementById("ra").innerHTML=`<p class="reptxt">${curReport}</p><div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--bdr);margin-top:8px"><span style="font-family:monospace;font-size:8px;color:var(--muted)">For informational use · HR review required</span><button class="regen" onclick="genReport()">↺ Regenerate</button></div>`;},800);
 }
 
-/* ── MAIN RENDER ── */
-function render(){
-  const e=EMPS.find(x=>x.id===selId);
-  const d=DEPT[e.dept]||{bg:"#e2e8f0",fg:"#475569"};
-  const rCol=e.risk>=0.7?"#dc2626":e.risk>=0.4?"#d97706":"#16a34a";
-  const rBg=e.risk>=0.7?"#fef2f2":e.risk>=0.4?"#fffbeb":"#f0fdf4";
-  const anom=getAnomaly(e);
-  const rp=Math.round(e.risk*100);
+/* ── SIDEBAR ── */
+function filterSide(){
+  const q=document.getElementById("si").value.toLowerCase();
+  const f=EMPS.filter(e=>e.name.toLowerCase().includes(q)||e.role.toLowerCase().includes(q)||e.dept.toLowerCase().includes(q));
+  document.getElementById("sh").textContent=`EMPLOYEES (${f.length})`;
+  document.getElementById("se").innerHTML=f.map(e=>{
+    const d=DC[e.dept]||{bg:"rgba(100,100,100,.2)",fg:"#aaa"};
+    const tc=sCol(e.ts),rc=rCol(e.risk);const an=getAnom(e);
+    return`<div class="ei${e.id===selId?" active":""}" onclick="clickEmp('${e.id}')">
+      <div class="av" style="width:32px;height:32px;background:${d.bg};color:${d.fg};font-size:11px">${ini(e.name)}</div>
+      <div class="em"><div class="enr"><span class="en${e.id===selId?" a":""}">${e.name}</span><span style="font-family:monospace;font-size:11px;color:${tc};font-weight:700;flex-shrink:0;margin-left:4px">${e.ts}</span></div>
+      <div class="er">${e.role}</div>
+      <div class="ebr"><div class="ebt"><div class="ebf" style="width:${e.ts}%;background:${tc}"></div></div><span class="erp" style="color:${rc}">${Math.round(e.risk*100)}%</span>${an&&an.type==="CRITICAL"?'<div class="pulse"></div>':''}</div></div>
+    </div>`;}).join('');
+}
 
-  // Compute tech scores
-  const shapClarity=Math.min(100,Math.round(80+(Object.values(e.shap).filter(v=>Math.abs(v)>0.1).length*3)-(e.miss*5)));
+/* ── FLEET VIEW ── */
+function renderFleet(){
+  const fd=fleetData();
+  const high=EMPS.filter(e=>e.risk>=0.7).length;
+  const crit=EMPS.filter(e=>getAnom(e)?.type==="CRITICAL").length;
+  const avgTs=Math.round(EMPS.reduce((s,e)=>s+e.ts,0)/EMPS.length);
+  const avgInc=Math.round(EMPS.reduce((s,e)=>s+e.income,0)/EMPS.length/100)*100;
+  const trusted=EMPS.filter(e=>e.ts>=80).length;
+  const low=EMPS.filter(e=>e.risk<0.3).length;
+  const med=EMPS.filter(e=>e.risk>=0.4&&e.risk<0.7).length;
+  const topRisk=[...EMPS].sort((a,b)=>b.risk-a.risk).slice(0,8);
 
-  let html=`
-  <!-- HEADER -->
-  <div class="emp-header">
-    <div style="display:flex;gap:14px;align-items:center">
-      <div class="emp-avatar" style="background:${d.bg};color:${d.fg}">${initials(e.name)}</div>
-      <div>
-        <div class="emp-active-label">▸ ACTIVE ANALYSIS · ${e.id}</div>
-        <div class="emp-full-name">${e.name}</div>
-        <div class="emp-title">${e.role}</div>
-        <div class="emp-tags">
-          <span class="dept-tag" style="background:${d.bg};color:${d.fg}">${e.dept}</span>
-          ${["Age "+e.age, e.tenure+"yr tenure","$"+fmt(e.income)+"/mo",e.prev+" prev employers",e.ot==="Yes"?"Overtime":"No overtime"].map(s=>`<span class="tag">${s}</span>`).join("")}
-        </div>
-      </div>
+  document.getElementById("main").innerHTML=`
+  <div class="fkr">
+    ${[{l:"TOTAL EMPLOYEES",v:"25",s:"IBM HR · 35 features",c:"#58a6ff",tc:"#1f6feb"},{l:"HIGH RISK ≥70%",v:high,s:"Immediate action",c:"#f85149",tc:"#da3633"},{l:"CRITICAL CASES",v:crit,s:"High risk + low trust",c:"#f85149",tc:"#da3633"},{l:"AVG TRUST SCORE",v:avgTs,s:"Fleet average",c:"#3fb950",tc:"#238636"},{l:"AVG MONTHLY INCOME",v:"$"+fmt(avgInc),s:"Across all roles",c:"#d29922",tc:"#bb8009"},{l:"TRUST SCORE 80+",v:trusted,s:"Reliable predictions",c:"#3fb950",tc:"#238636"}].map(k=>`<div class="fk" style="border-top-color:${k.tc}"><div class="fkl">${k.l}</div><div class="fkv" style="color:${k.c}">${k.v}</div><div class="fks" style="color:${k.c};opacity:.65">${k.s}</div></div>`).join('')}
+  </div>
+  <div class="g3">
+    <div class="cc"><div class="cct">ATTRITION RISK BY DEPARTMENT</div>${hBar(fd.depts.map(d=>({lbl:d.lbl,val:d.val,col:d.col})),270,fd.depts.length*27+8)}</div>
+    <div class="cc"><div class="cct">TRUST SCORE DISTRIBUTION</div>${vBar(fd.tsDist,220,155)}<div style="font-family:monospace;font-size:9px;color:var(--muted);margin-top:6px;text-align:center">Score bands</div></div>
+    <div class="cc" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="cct" style="align-self:flex-start">FLEET RISK COMPOSITION</div>
+      <div style="display:flex;align-items:center;gap:16px">${donut([{val:high,col:"#f85149"},{val:med,col:"#d29922"},{val:low,col:"#3fb950"}],120)}
+      <div style="display:flex;flex-direction:column;gap:8px">${[{l:"High Risk",n:high,c:"#f85149"},{l:"Medium",n:med,c:"#d29922"},{l:"Low Risk",n:low,c:"#3fb950"}].map(s=>`<div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:2px;background:${s.c}"></div><span style="font-family:monospace;font-size:10px;color:var(--muted)">${s.l}</span><span style="font-family:monospace;font-size:12px;font-weight:700;color:${s.c}">${s.n}</span></div>`).join('')}</div></div>
     </div>
-    <button class="export-btn" onclick="doExport()">↓ EXPORT REPORT</button>
+  </div>
+  <div class="g2">
+    <div class="cc"><div class="cct">TOP RISK EMPLOYEES — CLICK TO DRILL DOWN</div>
+      <table class="rt"><thead><tr><th>NAME</th><th>DEPT</th><th>RISK</th><th>TRUST</th><th>ANOMALY FLAG</th></tr></thead>
+      <tbody>${topRisk.map(e=>{const rc=rCol(e.risk),tc=sCol(e.ts);const an=getAnom(e);const d=DC[e.dept]||{bg:"rgba(100,100,100,.2)",fg:"#aaa"};return`<tr onclick="clickEmp('${e.id}')">
+        <td><div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:50%;background:${d.bg};color:${d.fg};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:9px;font-weight:700;flex-shrink:0">${ini(e.name)}</div><span style="font-weight:500">${e.name}</span></div></td>
+        <td><span style="font-family:monospace;font-size:9px;padding:2px 6px;border-radius:10px;background:${d.bg};color:${d.fg}">${e.dept}</span></td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;background:var(--dim);height:4px;border-radius:2px;overflow:hidden"><div style="width:${e.risk*100}%;height:100%;background:${rc}"></div></div><span style="font-family:monospace;font-size:11px;font-weight:700;color:${rc}">${Math.round(e.risk*100)}%</span></div></td>
+        <td><span style="font-family:monospace;font-size:11px;font-weight:700;color:${tc}">${e.ts}</span></td>
+        <td>${an?`<span style="font-family:monospace;font-size:8px;padding:2px 6px;border-radius:4px;background:${an.col}22;color:${an.col};border:1px solid ${an.col}44">${an.type}</span>`:'-'}</td>
+      </tr>`;}).join('')}</tbody></table>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="cc"><div class="cct">RISK BY INCOME BAND</div>${hBar(fd.inc,230,fd.inc.length*27+8)}</div>
+      <div class="cc"><div class="cct">TOP SHAP DRIVERS — High-Risk Employees</div>${hBar(fd.gsl,230,fd.gsl.length*27+8)}</div>
+    </div>
   </div>
 
-  <!-- ANOMALY -->
-  ${anom?`<div class="anomaly-banner" style="background:${anom.bg};border-color:${anom.color}30">
-    <div class="anomaly-dot" style="background:${anom.color};${anom.type==="CRITICAL"?"animation:pulse 1.5s infinite":""}"></div>
-    <div>
-      <div class="anomaly-title" style="color:${anom.color}">${anom.label}</div>
-      <div class="anomaly-detail">${anom.detail}</div>
+  <!-- WHY THIS MATTERS -->
+  <div class="cc" style="margin-bottom:12px">
+    <div class="cct">BUSINESS IMPACT — WHY TRUSTLENS MATTERS</div>
+    <div class="impgrid">
+      ${[{stat:"31%",icon:"↓",title:"Fewer false positives",detail:"Trust Score filters low-confidence predictions before they reach HR decision-makers, reducing bad-data-driven actions"},{stat:"2.4×",icon:"↑",title:"Higher model adoption",detail:"Stakeholders act on AI predictions when they understand why to trust them — closing the Decision-Trust Paradox"},{stat:"100%",icon:"✓",title:"EU AI Act coverage",detail:"Every employment prediction classified HIGH-RISK with mandatory human oversight gate — legally compliant by design"},{stat:"<1s",icon:"⚡",title:"Zero latency reports",detail:"Deterministic rule engine generates plain-English decision reports in under 1 second — no API, no hallucination risk"}].map(i=>`<div class="impc"><div class="imps">${i.stat} <span style="font-size:14px;color:var(--muted)">${i.icon}</span></div><div class="impt">${i.title}</div><div class="impd">${i.detail}</div></div>`).join('')}
     </div>
-  </div>`:""}
+    <div class="whygrid">
+      ${[["Decision-Trust Paradox","64% of digital transformation failures stem from poor communication between analytics and business — not the technology. TrustLens bridges this gap with a single, explainable score."],["Data Pipeline Integrity","Connects directly to ETL and data quality work: every prediction is scored upstream, so bad data surfaces before it contaminates a decision."],["Talent Scarcity Solution","Automates the translation layer between complex ML outputs and plain-English HR briefings — replacing the rare hybrid analyst."],["Regulatory Compliance","Employment AI is HIGH-RISK under EU AI Act Art. 6(2). TrustLens enforces human oversight at every prediction — audit-ready by design."]].map(([t,d])=>`<div class="whyc"><div class="whyt">${t}</div><div class="whyd">${d}</div></div>`).join('')}
+    </div>
+  </div>
 
-  <!-- PIPELINE -->
-  ${pipelineHTML()}
+  <!-- TECH STACK -->
+  <div class="cc" style="margin-bottom:12px">
+    <div class="cct">TECH STACK</div>
+    <div class="techgrid">
+      ${[{n:"Python 3.11",c:"#3fb950",bg:"rgba(63,185,80,.1)"},{n:"XGBoost",c:"#f85149",bg:"rgba(248,81,73,.1)"},{n:"SHAP",c:"#d29922",bg:"rgba(210,153,34,.1)"},{n:"Pandas",c:"#58a6ff",bg:"rgba(88,166,255,.1)"},{n:"NumPy",c:"#58a6ff",bg:"rgba(88,166,255,.1)"},{n:"Streamlit",c:"#bc8cff",bg:"rgba(188,140,255,.1)"},{n:"scikit-learn",c:"#3fb950",bg:"rgba(63,185,80,.1)"},{n:"Plotly",c:"#d29922",bg:"rgba(210,153,34,.1)"},{n:"Rule-Based NLG",c:"#6e7681",bg:"rgba(110,118,129,.1)"},{n:"EU AI Act Art. 6(2)",c:"#f85149",bg:"rgba(248,81,73,.1)"},{n:"IBM HR Dataset",c:"#58a6ff",bg:"rgba(88,166,255,.1)"},{n:"GitHub Pages",c:"#8b949e",bg:"rgba(139,148,158,.1)"}].map(t=>`<div class="techbadge" style="color:${t.c};background:${t.bg};border-color:${t.c}30">${t.n}</div>`).join('')}
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted);line-height:1.7">
+      <strong style="color:var(--sub)">Pipeline:</strong> Raw CSV → Pandas ETL (cleaning, outlier detection, quality scoring) → Feature Engineering (encoding, scaling) → XGBoost binary classifier (AUC 0.87) → SHAP TreeExplainer (per-prediction attribution) → Trust Score aggregation → Rule-based NLG report → Streamlit dashboard
+    </div>
+  </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn ${curTab==="overview"?"active":""}" onclick="setTab('overview')">Overview</button>
-    <button class="tab-btn ${curTab==="tech"?"active":""}" onclick="setTab('tech')">Tech Depth</button>
-    <button class="tab-btn ${curTab==="impact"?"active":""}" onclick="setTab('impact')">Business Impact</button>
+  <div class="mfooter"><span>TrustLens v5.0 · Swarnadeep Chatterjee · MBA, University of Louisville · 2025</span><span>IBM Watson HR · 25 records · XGBoost · SHAP · Rule-Based Engine · EU AI Act Compliant</span></div>`;
+}
+
+/* ── DETAIL VIEW ── */
+let detTab="overview",curReport=null;
+function setDTab(t){detTab=t;renderDetail();}
+function renderDetail(){
+  const e=EMPS.find(x=>x.id===selId);if(!e)return;
+  const d=DC[e.dept]||{bg:"rgba(100,100,100,.2)",fg:"#aaa"};
+  const rc=rCol(e.risk),rp=Math.round(e.risk*100);
+  const anom=getAnom(e);
+  const recs=buildRecs(e);
+  const shClarity=Math.min(100,Math.round(82+Object.values(e.shap).filter(v=>Math.abs(v)>0.1).length*2.5-(e.miss*5)));
+
+  let h=`
+  <div class="dh">
+    <div style="display:flex;gap:14px;align-items:center">
+      <div class="av" style="width:54px;height:54px;background:${d.bg};color:${d.fg};font-size:18px">${ini(e.name)}</div>
+      <div><div class="dal">▸ ACTIVE ANALYSIS · ${e.id}</div><div class="dn">${e.name}</div><div class="dr">${e.role}</div>
+      <div class="dtags"><span class="dpill" style="background:${d.bg};color:${d.fg}">${e.dept}</span>
+      ${["Age "+e.age,e.tenure+"yr tenure","$"+fmt(e.income)+"/mo",e.prev+" prev employers",e.ot==="Yes"?"Overtime":"No overtime"].map(s=>`<span class="dtag">${s}</span>`).join('')}</div></div>
+    </div>
+    <button class="xbtn" onclick="doExport()">↓ EXPORT REPORT</button>
+  </div>
+
+  ${anom?`<div class="anombanner" style="background:${anom.bg};border-color:${anom.col}30">
+    <div class="adot" style="background:${anom.col};${anom.type==="CRITICAL"?"animation:pulse 1.5s infinite":""}"></div>
+    <div><div class="at" style="color:${anom.col}">${anom.label}</div><div class="ad">${anom.detail}</div></div>
+  </div>`:''}
+
+  <div class="pipecard">
+    <div class="pipel">DATA PIPELINE — Raw Data → ETL Cleaning → Feature Engineering → XGBoost Model → TrustLens Layer → Decision Output</div>
+    <div class="piper">${[{l:"Raw CSV",s:"1,470 rows",c:"#58a6ff",bg:"rgba(88,166,255,.1)"},{l:"ETL Clean",s:"Nulls+Outliers",c:"#bc8cff",bg:"rgba(188,140,255,.1)"},{l:"Feature Eng.",s:"30 features",c:"#d29922",bg:"rgba(210,153,34,.1)"},{l:"XGBoost",s:"AUC 0.87",c:"#f85149",bg:"rgba(248,81,73,.1)"},{l:"TrustLens",s:"DQ+Conf+SHAP",c:"#3fb950",bg:"rgba(63,185,80,.1)"},{l:"Decision",s:"Score+Rec",c:"#58a6ff",bg:"rgba(88,166,255,.1)"}].map((p,i,a)=>`<div class="ps" style="background:${p.bg};border-color:${p.c}30"><div class="psn" style="color:${p.c}">${p.l}</div><div class="pss">${p.s}</div></div>${i<a.length-1?'<span class="pa">→</span>':''}`).join('')}</div>
+  </div>
+
+  <div class="dtabs">
+    <button class="dtb${detTab==="overview"?" active":""}" onclick="setDTab('overview')">Overview</button>
+    <button class="dtb${detTab==="tech"?" active":""}" onclick="setDTab('tech')">Tech Depth</button>
+    <button class="dtb${detTab==="impact"?" active":""}" onclick="setDTab('impact')">Business Impact</button>
   </div>`;
 
-  if(curTab==="overview"){
-    html+=`
-    <!-- BENTO -->
-    <div class="bento">
-      <!-- Trust Score -->
-      <div class="bento-card bento-trust" style="border-top-color:${sCol(e.ts)}">
-        <div style="font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em">TRUST SCORE</div>
-        ${gaugeHTML(e.ts,110)}
-        <div class="trust-badge" style="color:${sCol(e.ts)};background:${sBg(e.ts)};border:1px solid ${sCol(e.ts)}22">${e.ts>=80?"RELIABLE":e.ts>=60?"NEEDS REVIEW":"VERIFY FIRST"}</div>
-        <div class="trust-formula">DQ×0.40 + Conf×0.40 + SHAP×0.20</div>
+  if(detTab==="overview"){
+    h+=`
+    <!-- 4-PANEL METRICS -->
+    <div class="m4">
+      <div class="sw" style="border:1px solid var(--bdr);border-top:3px solid ${sCol(e.ts)}">
+        <div class="swl">TRUST SCORE</div>
+        ${speedoSVG(e.ts,230)}
+        <div class="swb" style="color:${sCol(e.ts)};background:${sBg(e.ts)};border:1px solid ${sCol(e.ts)}22">${e.ts>=80?"RELIABLE":e.ts>=60?"NEEDS REVIEW":"VERIFY FIRST"}</div>
+        <div class="swf">DQ×0.40 + Conf×0.40 + SHAP×0.20</div>
       </div>
-      <!-- Attrition Risk -->
-      <div class="bento-card" style="background:${rBg};border-top-color:${rCol};border-color:${rCol}22">
-        <div class="bento-label">ATTRITION RISK</div>
-        <div class="bento-big" style="color:${rCol}">${rp}<span style="font-size:14px;color:#94a3b8">%</span></div>
-        <div class="bento-sub" style="color:${rCol}">${rLbl(e.risk)}</div>
-        <div class="risk-spectrum">
-          <div style="position:absolute;left:0;width:33%;height:100%;background:linear-gradient(90deg,#f0fdf4,#16a34a22)"></div>
-          <div style="position:absolute;left:33%;width:34%;height:100%;background:linear-gradient(90deg,#d9770622,#d9770644)"></div>
-          <div style="position:absolute;left:67%;width:33%;height:100%;background:linear-gradient(90deg,#dc262622,#dc262655)"></div>
-          <div class="risk-dot" style="left:calc(${rp}% - 5px);background:${rCol}"></div>
+      <div class="mc" style="border-top-color:${rc};background:${sBg(100-rp)}">
+        <div class="mcl">ATTRITION RISK</div>
+        <div class="mcv" style="color:${rc}">${rp}<span class="mcu">%</span></div>
+        <div class="mcs" style="color:${rc}">${rLbl(e.risk)}</div>
+        <div class="rspec">
+          <div style="position:absolute;left:0;width:33%;height:100%;background:linear-gradient(90deg,rgba(63,185,80,.1),rgba(63,185,80,.2))"></div>
+          <div style="position:absolute;left:33%;width:34%;height:100%;background:linear-gradient(90deg,rgba(210,153,34,.15),rgba(210,153,34,.25))"></div>
+          <div style="position:absolute;left:67%;width:33%;height:100%;background:linear-gradient(90deg,rgba(248,81,73,.15),rgba(248,81,73,.3))"></div>
+          <div class="rdot" style="left:calc(${rp}% - 5px);background:${rc}"></div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-family:monospace;font-size:8px;color:var(--muted);letter-spacing:.14em;margin-bottom:6px">MODEL CONFIDENCE</div>
+          <div style="font-family:monospace;font-size:20px;font-weight:700;color:${sCol(e.conf)}">${e.conf}<span style="font-size:11px;color:var(--muted)">%</span></div>
+          <div class="mbt" style="margin-top:6px"><div class="mbf" style="width:${e.conf}%;background:${sCol(e.conf)}"></div></div>
         </div>
       </div>
-      <!-- EU AI Act -->
-      <div class="bento-card" style="background:#fef2f2;border-top-color:#dc2626;border-color:#dc262622">
-        <div class="bento-label">EU AI ACT STATUS</div>
-        <div style="font-family:monospace;font-size:15px;font-weight:700;color:#dc2626">HIGH RISK</div>
-        <div style="font-family:monospace;font-size:9px;color:#94a3b8;margin:3px 0 8px">Art. 6(2) — HR System</div>
-        <div class="eu-action" style="color:#dc2626;background:rgba(220,38,38,.08)">Human oversight required before any employment action</div>
+      <div class="mc" style="border-top-color:${sCol(e.dq)}">
+        <div class="mcl">DATA QUALITY</div>
+        <div class="mcv" style="color:${sCol(e.dq)}">${e.dq}<span class="mcu">/100</span></div>
+        <div class="mcs" style="color:var(--muted)">${e.miss} missing · ${e.out} outlier flag</div>
+        <div class="mbt"><div class="mbf" style="width:${e.dq}%;background:${sCol(e.dq)}"></div></div>
+        <div style="margin-top:10px">
+          <div style="font-family:monospace;font-size:8px;color:var(--muted);letter-spacing:.14em;margin-bottom:6px">ETL STATUS</div>
+          ${[["Null Detection",e.miss===0?"#3fb950":"#d29922",e.miss===0?"PASS":"FLAG"],["Outlier Check",e.out===0?"#3fb950":"#d29922",e.out===0?"PASS":"FLAG"],["Schema Valid","#3fb950","PASS"]].map(([l,c,s])=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="display:flex;align-items:center;gap:5px"><div style="width:5px;height:5px;border-radius:50%;background:${c}"></div><span style="font-family:monospace;font-size:9px;color:var(--sub)">${l}</span></div><span style="font-family:monospace;font-size:9px;font-weight:700;color:${c}">${s}</span></div>`).join('')}
+        </div>
       </div>
-      <!-- Model Confidence -->
-      <div class="bento-card" style="border-top-color:${sCol(e.conf)}">
-        <div class="bento-label">MODEL CONFIDENCE</div>
-        <div class="bento-big" style="color:${sCol(e.conf)}">${e.conf}<span style="font-size:13px;color:#94a3b8">%</span></div>
-        <div class="bento-sub" style="color:#94a3b8">XGBoost · Probability calibrated</div>
-        <div class="bento-bar-track"><div class="bento-bar-fill" style="width:${e.conf}%;background:${sCol(e.conf)}"></div></div>
-      </div>
-      <!-- Data Quality -->
-      <div class="bento-card" style="border-top-color:${sCol(e.dq)}">
-        <div class="bento-label">DATA QUALITY</div>
-        <div class="bento-big" style="color:${sCol(e.dq)}">${e.dq}<span style="font-size:13px;color:#94a3b8">/100</span></div>
-        <div class="bento-sub" style="color:#94a3b8">${e.miss} missing · ${e.out} outlier flag</div>
-        <div class="bento-bar-track"><div class="bento-bar-fill" style="width:${e.dq}%;background:${sCol(e.dq)}"></div></div>
+      <div class="mc" style="border-top-color:#f85149;background:rgba(248,81,73,.06)">
+        <div class="mcl">EU AI ACT STATUS</div>
+        <div style="font-family:monospace;font-size:15px;font-weight:700;color:#f85149;margin:4px 0">HIGH RISK</div>
+        <div style="font-family:monospace;font-size:9px;color:var(--muted);margin-bottom:8px">Art. 6(2) — HR System</div>
+        <div style="font-size:10px;color:#f85149;background:rgba(248,81,73,.1);border-radius:5px;padding:6px 8px;line-height:1.5">Human oversight required before any employment action</div>
+        <div style="margin-top:8px;font-family:monospace;font-size:9px;color:var(--muted)">Annex III · Point 4<br>Employment decisions AI</div>
       </div>
     </div>
 
-    <!-- SHAP + REPORT -->
-    <div class="shap-wrap">
-      <div class="section" style="margin-bottom:0">
+    <!-- SHAP + RECOMMENDATIONS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="seccard" style="margin-bottom:0">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <span style="font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em">SHAP FEATURE ATTRIBUTION</span>
+          <span class="seccardl" style="margin-bottom:0">SHAP FEATURE ATTRIBUTION</span>
           <div style="display:flex;gap:10px">
-            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:linear-gradient(90deg,#bbf7d0,#16a34a)"></div><span style="font-family:monospace;font-size:8px;color:#94a3b8">Protective</span></div>
-            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:linear-gradient(90deg,#fecaca,#dc2626)"></div><span style="font-family:monospace;font-size:8px;color:#94a3b8">Risk</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:linear-gradient(90deg,#238636,#3fb950)"></div><span style="font-family:monospace;font-size:8px;color:var(--muted)">Protective</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:linear-gradient(90deg,#da3633,#f85149)"></div><span style="font-family:monospace;font-size:8px;color:var(--muted)">Risk</span></div>
           </div>
         </div>
         ${shapHTML(e.shap)}
       </div>
-      <div class="section" style="margin-bottom:0;display:flex;flex-direction:column;min-height:300px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <span style="font-family:monospace;font-size:8px;color:#94a3b8;letter-spacing:.18em">DECISION REPORT</span>
-          <span style="font-family:monospace;font-size:8px;color:#475569;background:#f8fafc;padding:2px 7px;border-radius:4px;border:1px solid rgba(15,23,42,.08)">Rule-Based Engine</span>
+      <div class="seccard" style="margin-bottom:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span class="seccardl" style="margin-bottom:0">HR ACTION RECOMMENDATIONS</span>
+          <span class="secbadge">Auto-Generated · Rule Engine</span>
         </div>
-        <div id="report-area" style="flex:1;display:flex;flex-direction:column">
-          <div class="report-idle">
-            <p>Generate a plain-English decision report from SHAP values, risk scores, and EU AI Act compliance rules.</p>
-            <button class="gen-btn" onclick="generateReport()">GENERATE REPORT →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DATA AUDIT -->
-    <div class="section">
-      <div class="section-label">DATA INTEGRITY AUDIT</div>
-      <div class="audit-grid">
-        ${[{l:"Missing Fields",v:e.miss,max:10,inv:true},{l:"Outlier Flags",v:e.out,max:5,inv:true},{l:"Quality Score",v:e.dq,max:100,inv:false},{l:"Completeness",v:(100-e.miss*3)|0,max:100,inv:false},{l:"Reliability",v:Math.round(e.dq*0.4+e.conf*0.6),max:100,inv:false}].map(({l,v,max,inv})=>{
-          const pct=Math.min((v/max)*100,100);
-          const col=inv?(v===0?"#16a34a":v<=1?"#d97706":"#dc2626"):sCol(v);
-          return `<div><div class="audit-item-label"><span class="audit-item-name">${l}</span><span class="audit-item-val" style="color:${col}">${v}</span></div><div class="audit-track"><div class="audit-fill" style="width:${pct}%;background:${col}"></div></div></div>`;
-        }).join("")}
-      </div>
-      <div class="pipeline-status">
-        ${[["ETL Pipeline","#16a34a","PASS"],["Quality Gate",e.dq>=90?"#16a34a":"#d97706",e.dq>=90?"PASS":"WARN"],["Rule Engine","#2563eb","ACTIVE"],["EU Compliance","#dc2626","REVIEW REQUIRED"]].map(([l,c,s])=>`
-          <div class="status-row"><div class="status-left"><div class="status-dot" style="background:${c}"></div><span class="status-name">${l}</span></div><span class="status-val" style="color:${c}">${s}</span></div>`).join("")}
-      </div>
-    </div>`;
-  }
-
-  if(curTab==="tech"){
-    html+=`<div class="section">
-      <div class="section-label">HOW THE TRUST SCORE IS BUILT</div>
-      <div class="formula-box">
-        <div class="formula-text">TrustScore = <span style="color:#16a34a;font-weight:700">DataQuality</span> × 0.40 + <span style="color:#2563eb;font-weight:700">ModelConfidence</span> × 0.40 + <span style="color:#7c3aed;font-weight:700">Explainability</span> × 0.20</div>
-        <div class="formula-note">Weighted to prioritise data reliability and model stability. Explainability validates but does not drive the score.</div>
-      </div>
-      ${[
-        {l:"Data Quality",score:e.dq,col:"#16a34a",w:"40%",bg:"rgba(22,163,74,.04)",bc:"rgba(22,163,74,.15)",tags:[`Missing: ${e.miss} fields`,`Outliers: ${e.out}`,`Completeness: ${100-e.miss*3}%`,"Schema: valid","ETL: passed"]},
-        {l:"Model Confidence",score:e.conf,col:"#2563eb",w:"40%",bg:"rgba(37,99,235,.04)",bc:"rgba(37,99,235,.15)",tags:["XGBoost TreeExplainer","Probability calibrated","Class imbalance handled","AUC: 0.87 on test set","scale_pos_weight: 5"]},
-        {l:"Explainability (SHAP)",score:shapClarity,col:"#7c3aed",w:"20%",bg:"rgba(124,58,237,.04)",bc:"rgba(124,58,237,.15)",tags:[`${Object.values(e.shap).filter(v=>Math.abs(v)>0.1).length} dominant features`,`Top: ${Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))[0][0]}`,"SHAP variance: low","Prediction interpretable","No hallucination risk"]},
-      ].map(({l,score,col,w,bg,bc,tags})=>`
-        <div class="comp-card" style="background:${bg};border-color:${bc}">
-          <div class="comp-header">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="comp-name" style="color:${col}">${l}</span>
-              <span class="comp-weight">weight ${w}</span>
+        <div class="reccont">
+          ${recs.map(rec=>`
+          <div class="rec" style="background:${rec.bg};border-color:${rec.col}25">
+            <div class="rect">
+              <span class="recbadge" style="background:${rec.bg};color:${rec.col};border:1px solid ${rec.col}40">${rec.priority}</span>
+              <span class="recfactor" style="color:${rec.col}">${rec.icon||""} ${rec.factor} ${rec.pct?`(${rec.pct}%)`:""}</span>
             </div>
-            <span class="comp-score" style="color:${col}">${score}</span>
-          </div>
-          <div class="bento-bar-track"><div class="bento-bar-fill" style="width:${score}%;background:${col}"></div></div>
-          <div class="comp-tags">${tags.map(t=>`<span class="comp-tag">${t}</span>`).join("")}</div>
-        </div>`).join("")}
-    </div>`;
-  }
-
-  if(curTab==="impact"){
-    html+=`<div class="section">
-      <div class="section-label">BUSINESS IMPACT</div>
-      <div class="impact-grid">
-        ${[
-          {stat:"31%",icon:"↓",title:"Fewer false positives",detail:"Trust Score filters low-confidence predictions before they reach HR decision-makers"},
-          {stat:"2.4×",icon:"↑",title:"Higher AI adoption rate",detail:"Stakeholders act on predictions when they understand exactly why to trust them"},
-          {stat:"100%",icon:"✓",title:"EU AI Act coverage",detail:"Every employment prediction auto-classified as HIGH-RISK with mandatory human gate"},
-          {stat:"<1s",icon:"⚡",title:"Report generation",detail:"Deterministic rule engine — no API, no latency, fully auditable, zero hallucination risk"},
-        ].map(({stat,icon,title,detail})=>`
-          <div class="impact-card">
-            <div class="impact-stat">${stat} <span style="font-size:14px;color:#94a3b8">${icon}</span></div>
-            <div class="impact-title">${title}</div>
-            <div class="impact-detail">${detail}</div>
-          </div>`).join("")}
+            <div class="recaction">${rec.action}</div>
+          </div>`).join('')}
+        </div>
       </div>
     </div>
-    <div class="section">
-      <div class="section-label">WHY THIS MATTERS IN 2026</div>
-      ${[
-        ["Decision-Trust Paradox","64% of digital transformation failures are caused by poor collaboration between technical teams and business stakeholders — not technology itself. TrustLens closes this gap."],
-        ["Data Quality Crisis","Only 29% of enterprise applications are properly integrated. TrustLens scores upstream data quality before any prediction reaches a decision-maker."],
-        ["Talent Scarcity","There is a global shortage of ~250,000 professionals who can bridge deep analytics with business communication. TrustLens automates that translation."],
-        ["EU AI Act Compliance","Employment AI is legally HIGH-RISK under Art. 6(2). TrustLens is the only layer that enforces this classification at prediction time."],
-      ].map(([t,d])=>`<div style="border-left:3px solid #2563eb;padding:10px 14px;margin-bottom:10px;background:#eff6ff;border-radius:0 8px 8px 0"><div style="font-size:12px;font-weight:600;color:#1e40af;margin-bottom:4px">${t}</div><div style="font-size:11px;color:#475569;line-height:1.6">${d}</div></div>`).join("")}
+
+    <!-- NARRATIVE REPORT -->
+    <div class="seccard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span class="seccardl" style="margin-bottom:0">NARRATIVE DECISION REPORT</span>
+        <span class="secbadge">Rule-Based Engine · No AI Hallucination Risk</span>
+      </div>
+      <div id="ra" class="reparea">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px">
+          <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.65;max-width:200px">Generate a plain-English decision brief from SHAP values, risk scores, and EU AI Act rules.</p>
+          <button class="genbtn" onclick="genReport()">GENERATE NARRATIVE →</button>
+        </div>
+      </div>
     </div>`;
   }
 
-  html+=`<div class="footer">
-    <span>TrustLens v3.0 · Swarnadeep Chatterjee · MBA, University of Louisville · 2025</span>
-    <span>IBM Watson HR · 25 records · XGBoost · SHAP · Rule-Based Engine · EU AI Act Compliant</span>
-  </div>`;
-
-  document.getElementById("main").innerHTML=html;
-  if(curReport){
-    const ra=document.getElementById("report-area");
-    if(ra) ra.innerHTML=`<p class="report-text">${curReport}</p><div class="report-footer"><span style="font-family:monospace;font-size:8px;color:#94a3b8">For informational use · HR review required</span><button class="regen-btn" onclick="generateReport()">↺ Regenerate</button></div>`;
+  if(detTab==="tech"){
+    h+=`<div class="seccard">
+      <div class="seccardl">HOW THE TRUST SCORE IS BUILT</div>
+      <div class="fbox"><div class="ftxt">TrustScore = <span style="color:#3fb950;font-weight:700">DataQuality</span> × 0.40 + <span style="color:#58a6ff;font-weight:700">ModelConfidence</span> × 0.40 + <span style="color:#bc8cff;font-weight:700">SHAPClarity</span> × 0.20</div>
+      <div class="fnote">Weights prioritise upstream data reliability and model stability. Explainability validates but does not dominate.</div></div>
+      ${[{l:"Data Quality",sc:e.dq,c:"#3fb950",w:"40%",bg:"rgba(63,185,80,.05)",bc:"rgba(63,185,80,.2)",tags:[`Missing fields: ${e.miss}`,`Outlier flags: ${e.out}`,`Completeness: ${100-e.miss*3}%`,"Schema: valid","ETL pipeline: passed"]},
+         {l:"Model Confidence",sc:e.conf,c:"#58a6ff",w:"40%",bg:"rgba(88,166,255,.05)",bc:"rgba(88,166,255,.2)",tags:["XGBoost TreeExplainer","Probability calibrated","Class imbalance: scale_pos_weight=5","AUC: 0.87 on held-out test set","Threshold: 0.5 probability"]},
+         {l:"SHAP Clarity",sc:shClarity,c:"#bc8cff",w:"20%",bg:"rgba(188,140,255,.05)",bc:"rgba(188,140,255,.2)",tags:[`${Object.values(e.shap).filter(v=>Math.abs(v)>0.1).length} dominant factors`,`Top driver: ${Object.entries(e.shap).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))[0][0]}`,"Fully deterministic","Zero hallucination risk","EU Art. 13 compliant"]},
+      ].map(({l,sc,c,w,bg,bc,tags})=>`<div class="compc" style="background:${bg};border-color:${bc}"><div class="comph"><div style="display:flex;align-items:center;gap:8px"><span class="compn" style="color:${c}">${l}</span><span class="compw">weight ${w}</span></div><span class="comps" style="color:${c}">${sc}</span></div><div class="mbt" style="margin-bottom:8px"><div class="mbf" style="width:${sc}%;background:${c}"></div></div><div class="compts">${tags.map(t=>`<span class="comptt">${t}</span>`).join('')}</div></div>`).join('')}
+    </div>`;
   }
+
+  if(detTab==="impact"){
+    h+=`
+    <div class="seccard"><div class="seccardl">BUSINESS IMPACT</div>
+      <div class="impgrid">
+        ${[{stat:"31%",icon:"↓",title:"Fewer false positives",detail:"Trust Score filters low-confidence predictions before reaching HR leaders"},{stat:"2.4×",icon:"↑",title:"Higher AI adoption rate",detail:"Stakeholders act when they understand why to trust the prediction"},{stat:"100%",icon:"✓",title:"EU AI Act coverage",detail:"Every employment prediction gated with mandatory human oversight"},{stat:"<1s",icon:"⚡",title:"Report generation",detail:"Deterministic rule engine — no API, zero latency, zero hallucination"}].map(i=>`<div class="impc"><div class="imps">${i.stat} <span style="font-size:14px;color:var(--muted)">${i.icon}</span></div><div class="impt">${i.title}</div><div class="impd">${i.detail}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="seccard"><div class="seccardl">WHY THIS MATTERS IN 2026</div>
+      <div class="whygrid">
+        ${[["Decision-Trust Paradox","64% of digital transformation failures stem from poor communication between analytics teams and business stakeholders — not the technology. TrustLens closes this gap with a single explainable score."],["Data Quality Crisis","Only 29% of enterprise applications are properly integrated. TrustLens scores upstream data quality before any prediction reaches a decision-maker — preventing bad-data-driven HR actions."],["Talent Scarcity","Global shortage of ~250,000 professionals who can bridge deep analytics with business communication. TrustLens automates the translation layer between ML models and HR managers."],["EU AI Act 2024","Employment AI is legally HIGH-RISK under Art. 6(2). TrustLens enforces this classification and mandates human sign-off at every prediction — audit-ready and regulatorily compliant."]].map(([t,d])=>`<div class="whyc"><div class="whyt">${t}</div><div class="whyd">${d}</div></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  h+=`<div class="mfooter"><span>TrustLens v5.0 · Swarnadeep Chatterjee · MBA, University of Louisville · 2025</span><span>IBM Watson HR · XGBoost · SHAP · Rule-Based NLG · EU AI Act Compliant</span></div>`;
+  document.getElementById("main").innerHTML=h;
+  if(curReport){const ra=document.getElementById("ra");if(ra)ra.innerHTML=`<p class="reptxt">${curReport}</p><div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--bdr);margin-top:8px"><span style="font-family:monospace;font-size:8px;color:var(--muted)">For informational use · HR review required</span><button class="regen" onclick="genReport()">↺ Regenerate</button></div>`;}
 }
 
-function setTab(t){curTab=t;render();}
+/* ── STATE & NAV ── */
+let view="fleet",selId=null;
+function clickEmp(id){selId=id;curReport=null;detTab="overview";view="detail";filterSide();document.getElementById("vt-f").classList.remove("active");document.getElementById("vt-d").classList.add("active");document.getElementById("vt-d").style.display="";renderDetail();}
+function showFleet(){view="fleet";document.getElementById("vt-f").classList.add("active");document.getElementById("vt-d").classList.remove("active");renderFleet();}
+function showDetail(id){if(id)selId=id;view="detail";document.getElementById("vt-f").classList.remove("active");document.getElementById("vt-d").classList.add("active");document.getElementById("vt-d").style.display="";renderDetail();}
 
 /* ── INIT ── */
-filterList();
-render();
+const h0=EMPS.filter(e=>e.risk>=0.7).length;
+const c0=EMPS.filter(e=>getAnom(e)?.type==="CRITICAL").length;
+const at0=Math.round(EMPS.reduce((s,e)=>s+e.ts,0)/EMPS.length);
+document.getElementById("cv-hr").textContent=h0;
+document.getElementById("cv-cr").textContent=c0;
+document.getElementById("cv-at").textContent=at0;
+const bands=[{l:"0-59",c:"#f85149",n:EMPS.filter(e=>e.ts<60).length},{l:"60-79",c:"#d29922",n:EMPS.filter(e=>e.ts>=60&&e.ts<80).length},{l:"80+",c:"#3fb950",n:EMPS.filter(e=>e.ts>=80).length}];
+const mx0=Math.max(...bands.map(b=>b.n));
+document.getElementById("sdb").innerHTML=bands.map(b=>`<div class="sdc"><span class="sdn" style="color:${b.c}">${b.n}</span><div class="sdt"><div class="sdf" style="height:${(b.n/mx0)*28}px;background:${b.c}"></div></div><span class="sdr">${b.l}</span></div>`).join('');
+filterSide();
+renderFleet();
 </script>
 </body>
 </html>
